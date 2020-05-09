@@ -1,107 +1,78 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Dimensions, StatusBar} from 'react-native';
+import React, {useState, Component} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  StatusBar,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Color from '../../../_shared/utils/Color';
-import Font from '../../../_shared/utils/Font';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
 import Button from '../../../_shared/components/Partials/Button';
 import ClockUI from '../../../_shared/components/ClockUI';
 import moment from 'moment';
+import styles from './styles';
 
-const {height, width} = Dimensions.get('window');
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    display: 'flex',
-    backgroundColor: Color.BACKGROUND,
-    marginTop: StatusBar.currentHeight,
-  },
-  text: {
-    fontSize: 30,
-    color: Color.PRIMARY,
-    fontFamily: Font.NORMAL,
-    marginBottom: 20,
-  },
-  header: {
-    width,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 30,
-    paddingHorizontal: 30,
-  },
-  headerTitle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitleText: {
-    color: Color.TEXTPRIMARY,
-    fontFamily: Font.SMBOLD,
-    fontSize: 20,
-  },
-  menu: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clockContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    marginTop: 40,
-  },
-  currentDateAndAlarm: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    width,
-    paddingTop: 10,
-  },
-  currentDate: {
-    fontSize: 18,
-    fontFamily: Font.NORMAL,
-    color: Color.TEXTPRIMARY,
-    textTransform: 'uppercase',
-  },
-  btnContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-  },
-  timezones: {paddingTop: 40},
-  timezoneUi: {
-    paddingHorizontal: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-  },
-  tzLeft: {},
-  tzName: {
-    color: Color.TEXTPRIMARY,
-    fontFamily: Font.NORMAL,
-    fontSize: 16,
-    paddingBottom: 20,
-  },
-  tzDate: {
-    color: Color.TEXTSECONDARY,
-    fontFamily: Font.NORMAL,
-    fontSize: 14,
-  },
-  tzRight: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tzTime: {
-    color: Color.TEXTPRIMARY,
-    fontSize: 25,
-    fontFamily: Font.MEDIUM,
-  },
-});
+const {width, height} = Dimensions.get('window');
+
 
 interface LayoutProps {
   route: object;
   navigation: object;
 }
+const timezones = [
+  {
+    city: 'New York',
+    code: 'US',
+    country: 'United States of America',
+    offsets: {inMinutes: -5 * 60},
+  },
+  {
+    city: 'Lagos',
+    code: 'NG',
+    country: 'Nigeria',
+    offsets: {inMinutes: 1 * 60},
+  },
+  {
+    city: 'Abu Dhabi',
+    code: 'UAE',
+    country: 'United Arab Emirates',
+    offsets: {inMinutes: 3 * 60},
+  },
+  {
+    city: 'Canberra',
+    code: 'AUS',
+    country: 'Australia',
+    offsets: {inMinutes: 10 * 60},
+  },
+  {
+    city: 'Paris',
+    code: 'Fr',
+    country: 'France',
+    offsets: {inMinutes: 1 * 60},
+  },
+  {
+    city: 'New Chuch',
+    code: 'NZ',
+    country: 'New Zeland',
+    offsets: {inMinutes: 9 * 60},
+  },
+  {
+    city: 'Los Angeles',
+    code: 'US',
+    country: 'United States of America',
+    offsets: {inMinutes: -8 * 60},
+  },
+  {
+    city: 'Hong-Kong',
+    code: 'PRC',
+    country: 'China',
+    offsets: {inMinutes: 7 * 60},
+  },
+];
+
 export default ({route, navigation}: LayoutProps) => {
   const [time, setTime] = useState(new Date().valueOf());
   return (
@@ -123,7 +94,7 @@ export default ({route, navigation}: LayoutProps) => {
           borderWidth={12}
           onTimeChange={(e: object) => {
             console.log(e);
-            setTime(new Date().setHours(e.hours, e.minutes, e.seconds));
+            setTime(e);
           }}
           useWatch
           watchUnit={'minutes'}
@@ -145,45 +116,28 @@ export default ({route, navigation}: LayoutProps) => {
       </View>
 
       <View style={styles.timezones}>
-        <View style={styles.timezoneUi}>
-          <View style={styles.tzLeft}>
-            <Text style={styles.tzName}>New York, US</Text>
-            <Text style={styles.tzDate}>
-              {moment(time).format('ddd, MMMM Do')}
-            </Text>
-          </View>
-          <View style={styles.tzRight}>
-            <Text style={styles.tzTime}>{moment(time).format('LT')}</Text>
-          </View>
-        </View>
-
-        <View style={styles.timezoneUi}>
-          <View style={styles.tzLeft}>
-            <Text style={styles.tzName}>Lagos, NG</Text>
-            <Text style={styles.tzDate}>
-              {moment(time).add(7, 'hours').format('ddd, MMMM Do')}
-            </Text>
-          </View>
-          <View style={styles.tzRight}>
-            <Text style={styles.tzTime}>
-              {moment(time).add(7, 'hours').format('LT')}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.timezoneUi}>
-          <View style={styles.tzLeft}>
-            <Text style={styles.tzName}>Liverpool, UK</Text>
-            <Text style={styles.tzDate}>
-              {moment(time).add(6, 'hours').format('ddd, MMMM Do')}
-            </Text>
-          </View>
-          <View style={styles.tzRight}>
-            <Text style={styles.tzTime}>
-              {moment(time).add(6, 'hours').format('LT')}
-            </Text>
-          </View>
-        </View>
+        {timezones.map(({city, code, offsets}, key) => {
+          const cTime = moment
+            .utc()
+            .add(offsets.inMinutes, 'minutes')
+            .set({...time});
+          return (
+            <View key={key}>
+              <View style={styles.timezoneUi}>
+                <View style={styles.tzLeft}>
+                  <Text style={styles.tzName}>{`${city}, ${code}`}</Text>
+                  <Text style={styles.tzDate}>
+                    {cTime.format('ddd, MMMM Do')}
+                  </Text>
+                </View>
+                <View style={styles.tzRight}>
+                  <Text style={styles.tzTime}>{cTime.format('LT')}</Text>
+                </View>
+              </View>
+              <View style={styles.divider} />
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
   );
