@@ -1,13 +1,13 @@
 import React, {useMemo, useState, useEffect} from 'react';
-import {View, StyleSheet, Dimensions, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import Svg, {Circle} from 'react-native-svg';
-import Animated from 'react-native-reanimated';
 
 import Color from '../../utils/Color';
 import Ticks from './Ticks';
 import Hours from './Hours';
 import Hands from './Hands';
 import {time2Angle} from '../../utils/AnimationHelpers';
+import moment from 'moment';
 
 const styles = StyleSheet.create({
   container: {

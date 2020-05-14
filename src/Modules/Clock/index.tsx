@@ -1,17 +1,28 @@
 import React from 'react';
-import {View, Text, StyleSheet, StatusBar, Button} from 'react-native';
-import CreateStackNav from '../../_shared/utils/CreateStackNav';
-import CreateDrawerNav from '../../_shared/utils/CreateDrawerNav';
+import {StatusBar, Dimensions} from 'react-native';
+import CreateStackNav from '../../_shared/components/CreateStackNav';
+import CreateDrawerNav from '../../_shared/components/CreateDrawerNav';
 import Layout from './Layout';
 import Color from '../../_shared/utils/Color';
 import Timezone from '../../_shared/components/Timezone';
+import Header from '../../_shared/components/Partials/Header';
 
-interface TZProps {
-  navigation: Required<{
-    navigate: Function;
-  }>;
-}
-
+const {width} = Dimensions.get('window');
+const Drawer = () => (
+  <CreateDrawerNav
+    config={[
+      {
+        component: Layout,
+        name: 'Clock',
+      },
+    ]}
+    navigatorProps={{
+      drawerStyle: {
+        width,
+      },
+    }}
+  />
+);
 const Clock = () => {
   return (
     <>
@@ -23,19 +34,28 @@ const Clock = () => {
       <CreateStackNav
         config={[
           {
-            name: 'Layout',
-            component: Layout,
-          },
-          {
-            name: 'Timezone',
-            component: Timezone,
+            name: 'Clock',
+            component: Drawer,
+            screenOptions: {
+              options: {
+                headerStyle: {backgroundColor: 'transparent'},
+                header: ({routes, navigation}) => {
+                  return (
+                    <Header
+                      useDrawerMenu
+                      routeName={'Clock'}
+                      navigation={navigation}
+                    />
+                  );
+                },
+              },
+            },
           },
         ]}
         navigatorProps={{
-          headerMode: 'none',
-          mode: 'modal',
           screenOptions: {
-            headerShown: 'false',
+            headerShown: true,
+            gestureEnabled: true,
           },
         }}
       />

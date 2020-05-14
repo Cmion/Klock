@@ -2,13 +2,19 @@ import {Dimensions, StyleSheet, StatusBar} from 'react-native';
 import Color from '../../../_shared/utils/Color';
 import Font from '../../../_shared/utils/Font';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
     flex: 1,
     display: 'flex',
     backgroundColor: Color.BACKGROUND,
-    marginTop: StatusBar.currentHeight,
+    // marginTop: StatusBar.currentHeight,
+  },
+  scrollView: {
+    height,
+    left: 0,
+    right: 0,
+    backgroundColor: Color.BACKGROUND,
   },
   text: {
     fontSize: 30,
@@ -51,8 +57,8 @@ export default StyleSheet.create({
     paddingTop: 10,
   },
   currentDate: {
-    fontSize: 18,
-    fontFamily: Font.NORMAL,
+    fontSize: 20,
+    fontFamily: Font.MEDIUM,
     color: Color.TEXTPRIMARY,
     textTransform: 'uppercase',
   },
@@ -61,7 +67,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 40,
   },
-  timezones: {paddingTop: 40},
+  timezones: {paddingTop: 10},
   timezoneUi: {
     paddingHorizontal: 30,
     flexDirection: 'row',

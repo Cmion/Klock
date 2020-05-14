@@ -1,25 +1,18 @@
 /* eslint-disable prettier/prettier */
 import React, {PureComponent} from 'react';
 import propTypes from 'prop-types';
-import {StyleSheet, View} from 'react-native';
-import {runTiming, onGestureEvent} from '../../utils/AnimationHelpers';
-import {
-  TapGestureHandler,
-  State,
-  TapGestureHandlerProperties,
-} from 'react-native-gesture-handler';
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
+import {runTiming} from '../../../utils/AnimationHelpers';
+
 import Animated, {
   Value,
-  call,
   Clock,
-  onChange,
   cond,
   Easing,
   eq,
-  block,
   greaterOrEq,
 } from 'react-native-reanimated';
-import Color from '../../utils/Color';
+import Color from '../../../utils/Color';
 
 type SwitchProps = {
   height?: number;
@@ -37,9 +30,7 @@ class Switch extends PureComponent {
   #INDICATORSIZE: number;
   #PADDING: number;
   #TIMING_TO_VALUE: number;
-  #STATE: Animated.Node<State>;
   #STATECHANGED: number;
-  #GESTUREHANDLER: TapGestureHandlerProperties;
   #CLOCK: Animated.Clock;
   state: {
     checked: boolean;
@@ -75,11 +66,10 @@ class Switch extends PureComponent {
     this.#INDICATORSIZE = (props.height || 25) * 0.7;
     // round(this.#indicatorSize / 4)
     this.#PADDING = Math.round(this.#INDICATORSIZE / 4);
-    this.#TIMING_TO_VALUE = (props.width || 45) - this.#INDICATORSIZE - this.#PADDING;
+    this.#TIMING_TO_VALUE =
+      (props.width || 45) - this.#INDICATORSIZE - this.#PADDING;
     this.#CLOCK = new Clock();
-    this.#STATE = new Value(State.UNDETERMINED);
     this.#STATECHANGED = -1;
-    this.#GESTUREHANDLER = onGestureEvent({state: this.#STATE});
     this.props = props;
     this.state = {
       checked: props.checked || false,
@@ -87,6 +77,9 @@ class Switch extends PureComponent {
   }
 
   componentDidMount() {
+    this.#STATECHANGED = -1;
+  }
+  componentDidUpdate() {
     this.#STATECHANGED = -1;
   }
 
@@ -131,31 +124,22 @@ class Switch extends PureComponent {
     } = this.props;
     return (
       <>
-        <Animated.Code>
-          {() =>
-            block([
-              onChange(
-                this.#STATE,
-                cond(
-                  eq(this.#STATE, State.BEGAN),
-                  call([], () => {
-                    if (!disabled) {
-                      this.#STATECHANGED = 0;
-                      this.setState({
-                        ...this.state,
-                        checked: !this.state.checked,
-                      });
-                    }
-                    if (typeof onChangeValue === 'function' && !disabled) {
-                      onChangeValue(this.state.checked);
-                    }
-                  }),
-                ),
-              ),
-            ])
-          }
-        </Animated.Code>
-        <TapGestureHandler {...this.#GESTUREHANDLER} numberOfTaps={1}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          disabled={disabled}
+          accessibilityLabel={'Switch'}
+          accessibilityRole={'switch'}
+          onPress={() => {
+            this.#STATECHANGED = 0;
+            this.setState({
+              ...this.state,
+              checked: !this.state.checked,
+            });
+
+            if (typeof onChangeValue === 'function') {
+              onChangeValue(this.state.checked);
+            }
+          }}>
           <Animated.View>
             <View
               style={
@@ -198,7 +182,7 @@ class Switch extends PureComponent {
               />
             </View>
           </Animated.View>
-        </TapGestureHandler>
+        </TouchableOpacity>
       </>
     );
   }
