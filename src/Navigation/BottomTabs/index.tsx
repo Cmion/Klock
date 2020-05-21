@@ -1,33 +1,21 @@
 import React, {useEffect} from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Screens from '../../Modules';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Color from '../../_shared/utils/Color';
 import {connect} from 'react-redux';
-import {initDB} from '../../redux/actions';
-import {TimezoneConfig} from '../../_shared/utils/RealmDB';
 
+import TabbarComponent from './TabbarComponent';
 const Tab = createBottomTabNavigator();
 
 // eslint-disable-next-line no-shadow
-const BottomTabs = ({initDB}: {initDB: Function}) => {
-  const schemaConfigs = [TimezoneConfig];
-  useEffect(() => {
-    initDB(schemaConfigs);
-  }, []);
+const BottomTabs = () => {
   return (
     <Tab.Navigator
+      tabBar={(props) => <TabbarComponent {...props} />}
       tabBarOptions={{
         showLabel: false,
         activeTintColor: Color.PRIMARY,
         inactiveTintColor: Color.TEXTSECONDARY,
-        // keyboardHidesTabBar: true,
-        style: {
-          backgroundColor: Color.DARK,
-          borderTopWidth: 0,
-          height: 70,
-          overflow: 'hidden',
-        },
       }}>
       {Screens.map(({component, name, icon}, key) => {
         return (
@@ -35,10 +23,10 @@ const BottomTabs = ({initDB}: {initDB: Function}) => {
             key={key}
             name={name}
             component={component}
+            initialParams={{
+              icon: icon,
+            }}
             options={{
-              tabBarIcon: ({color, focused}) => {
-                return <Icon name={icon} size={30} color={color} />;
-              },
               tabBarAccessibilityLabel: name,
             }}
           />
@@ -48,7 +36,5 @@ const BottomTabs = ({initDB}: {initDB: Function}) => {
   );
 };
 
-const dispatchToProps = {
-  initDB,
-};
+const dispatchToProps = {};
 export default connect(null, dispatchToProps)(BottomTabs);
