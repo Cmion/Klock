@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 export default {
-  NORMAL: 'Montserrat Alternates Regular',
-  LIGHT: 'Montserrat Alternates Light',
-  MEDIUM: 'Montserrat Alternates Medium',
-  BOLD: 'Montserrat Alternates Bold',
-  SMBOLD: 'Montserrat Alternates SemiBold',
+  NORMAL: 'Montserrat Regular',
+  LIGHT: 'Montserrat Light',
+  MEDIUM: 'Montserrat Medium',
+  BOLD: 'Montserrat Bold',
+  SMBOLD: 'Montserrat SemiBold',
 };

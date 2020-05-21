@@ -4,6 +4,8 @@ export const createActionType = (type = 'APP', entity = 'APP') => ({
   SUCCESS: `@@KLOCK[${entity}] ${type.toUpperCase()}_SUCCESS`,
   END: `@@KLOCK[${entity}] ${type.toUpperCase()}_END`,
 });
+export const createActionString = (type = 'APP', entity = 'APP') =>
+  `@@KLOCK[${entity}] ${type.toUpperCase()}`;
 
 export const capitalize = (value: string) => {
   if (typeof value !== 'string') {
@@ -16,116 +18,60 @@ export const capitalize = (value: string) => {
   return firstLetter + splittedValue.slice(1).join('');
 };
 
-export type SectionListDataProp = Array<{
-  title: string;
-  data: any[];
-}>;
-
-interface SectionHeader {
-  type: 'SECTION_HEADER';
-}
-
-interface Row {
-  type: 'ROW';
-  index: number;
-}
-
-interface SectionFooter {
-  type: 'SECTION_FOOTER';
-}
-
-type ListElement = SectionHeader | Row | SectionFooter;
-
-export interface Parameters {
-  getItemHeight: (
-    rowData: any,
-    sectionIndex: number,
-    rowIndex: number,
-  ) => number;
-  getSeparatorHeight?: (sectionIndex: number, rowIndex: number) => number;
-  getSectionHeaderHeight?: (sectionIndex: number) => number;
-  getSectionFooterHeight?: (sectionIndex: number) => number;
-  listHeaderHeight?: number | (() => number);
-}
-
-export const getItemLayout = ({
-  getItemHeight,
-  getSeparatorHeight = () => 0,
-  getSectionHeaderHeight = () => 0,
-  getSectionFooterHeight = () => 0,
-  listHeaderHeight = 0,
-}: Parameters) => (data: SectionListDataProp, index: number) => {
-  let i = 0;
-  let sectionIndex = 0;
-  let elementPointer: ListElement = {type: 'SECTION_HEADER'};
-  let offset =
-    typeof listHeaderHeight === 'function'
-      ? listHeaderHeight()
-      : listHeaderHeight;
-
-  while (i < index) {
-    switch (elementPointer.type) {
-      case 'SECTION_HEADER': {
-        const sectionData = data[sectionIndex].data;
-
-        offset += getSectionHeaderHeight(sectionIndex);
-
-        // If this section is empty, we go right to the footer...
-        if (sectionData.length === 0) {
-          elementPointer = {type: 'SECTION_FOOTER'};
-          // ...otherwise we make elementPointer point at the first row in this section
-        } else {
-          elementPointer = {type: 'ROW', index: 0};
-        }
-
-        break;
-      }
-      case 'ROW': {
-        const sectionData = data[sectionIndex].data;
-
-        const rowIndex = elementPointer.index;
-
-        offset += getItemHeight(sectionData[rowIndex], sectionIndex, rowIndex);
-        elementPointer.index += 1;
-
-        if (rowIndex === sectionData.length - 1) {
-          elementPointer = {type: 'SECTION_FOOTER'};
-        } else {
-          offset += getSeparatorHeight(sectionIndex, rowIndex);
-        }
-
-        break;
-      }
-      case 'SECTION_FOOTER': {
-        offset += getSectionFooterHeight(sectionIndex);
-        sectionIndex += 1;
-        elementPointer = {type: 'SECTION_HEADER'};
-        break;
-      }
-    }
-
-    i += 1;
-  }
-
-  let length;
-  switch (elementPointer.type) {
-    case 'SECTION_HEADER':
-      length = getSectionHeaderHeight(sectionIndex);
-      break;
-    case 'ROW':
-      const rowIndex = elementPointer.index;
-      length = getItemHeight(
-        data[sectionIndex].data[rowIndex],
-        sectionIndex,
-        rowIndex,
-      );
-      break;
-    case 'SECTION_FOOTER':
-      length = getSectionFooterHeight(sectionIndex);
-      break;
-    default:
-      throw new Error('Unknown elementPointer.type');
-  }
-
-  return {length, offset, index};
+export const objectId = (): string => {
+  // eslint-disable-next-line no-bitwise
+  const timestamp = ((new Date().getTime() / 1000) | 0).toString(16);
+  return (
+    timestamp +
+    'xxxxxxxxxxxxxxxx'
+      .replace(/[x]/g, () => {
+        // eslint-disable-next-line no-bitwise
+        return ((Math.random() * 16) | 0).toString(16);
+      })
+      .toLowerCase()
+  );
 };
+export const arrayToById = (array: Array<{}>) => {
+  return array.reduce((accumulator, currentObject) => {
+    const {_id} = currentObject;
+    accumulator[_id] = currentObject;
+    return accumulator;
+  }, {});
+};
+
+export function debounce(
+  callback: Function,
+  wait: number = 200,
+  immediate: boolean = false,
+): Function {
+  let timeout: any;
+
+  return function execute(): void {
+    let context = this;
+    let args = arguments;
+    timeout = null;
+
+    // Timeout callback
+    const later = function (): void {
+      // reset timeout
+      timeout = null;
+      // invoke callback function if has not been called immediately
+      if (!immediate) {
+        callback.apply(context, args);
+      }
+    };
+
+    // determine whether to call func immediately
+    const callNow = immediate && !timeout;
+
+    // clears timeout to prevent previous timeout from return results
+    clearTimeout(timeout);
+    // set timeout
+    timeout = setTimeout(later, wait);
+
+    // calls func if immediate is true
+    if (callNow) {
+      callback.apply(context, args);
+    }
+  };
+}

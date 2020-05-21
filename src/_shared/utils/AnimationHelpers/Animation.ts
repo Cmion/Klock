@@ -68,7 +68,9 @@ type TimingConfig = {
   duration?: number;
 };
 
-export const runTiming = (timingConfig: TimingConfig) => {
+export const runTiming = (
+  timingConfig: TimingConfig,
+): Animated.Node<number> => {
   const clock = timingConfig.clock || new Clock();
   const from = timingConfig.from || 0;
   const to = timingConfig.to || 10;
