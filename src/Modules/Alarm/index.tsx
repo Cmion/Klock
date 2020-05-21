@@ -1,34 +1,54 @@
 /* eslint-disable prettier/prettier */
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React from 'react';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
 import Color from '../../_shared/utils/Color';
 import Font from '../../_shared/utils/Font';
+import {debounce} from '../../_shared/utils/Helpers';
+import {Collection} from '../../_shared/utils/Constants';
+
 import {
-  useDB,
-  findById,
-  findAll,
+  openDB,
+  // findById,
+  // findAll,
   deleteAll,
-  deleteOne,
-  insetOne,
+  // deleteOne,
+  // // insetOne,
   getAll,
-  findOne,
-  updateOne,
-  updateById,
-  updateMany,
-  sort,
+  // findOne,
+  // updateOne,
+  // updateById,
+  // updateMany,
+  // sort,
+  // prettify,
+  // deleteMany,
+  // deleteById,
+  AppConfig,
+  CityConfig,
+  TimezoneConfig,
   prettify,
-  deleteMany,
-  deleteById,
 } from '../../_shared/utils/RealmDB';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-// import uuid from 'uuid/v1';
+import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
+import {
+  insertOne,
+  ZONE_INSERT_ONE,
+  ZONE_INSERT_MANY,
+  CITY_INSERT_ONE,
+  CITY_INSERT_MANY,
+  CITY_FIND_ALL,
+  findAll,
+  CITY_FIND_BY_ID,
+  findById,
+  insertMany,
+} from '../../redux/actions';
+
+import {connect} from 'react-redux';
+import {findOne} from './../../redux/actions/db';
+import {CITY_FIND_ONE} from './../../redux/actions/timezone/city';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: Color.BACKGROUND,
   },
   text: {
@@ -37,66 +57,131 @@ const styles = StyleSheet.create({
     fontFamily: Font.NORMAL,
   },
 });
-const Alarm = () => {
-  const schema = {
-    name: 'Test2',
-    properties: {
-      id: 'int',
-      name: 'string',
-      age: 'int',
-    },
-  };
-  const [data, setData] = useState(null);
-  const [database, setDB] = useState(useDB('Klock.realm', schema, 0));
 
-  // useEffect(() => console.log(data), [data]);
+const Alarm = ({
+  insertOne,
+  insertMany,
+  zoneDB,
+  zoneData,
+  cityDB,
+  cityData,
+  findOne,
+  findAll,
+}: {
+  insertOne: Function;
+  // database: {db: Realm; name: string};
+}) => {
+  const [value, setValue] = React.useState('');
+  const search = React.useMemo(
+    () =>
+      debounce(
+        (text: string) => {
+          findAll({
+            onSuccess: CITY_FIND_ALL,
+            db: Collection.CITY,
+            queryString: `city BEGINSWITH[c] "${text || null}"`,
+            sort: {
+              param: 'city',
+              order: 'desc',
+            },
+          });
+        },
+        500,
+        false,
+      ),
+    [],
+  );
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Alarm View</Text>
+      <View>
+        <TextInput
+          value={value}
+          onChangeText={(text) => {
+            search(text);
+            console.log(text);
+            setValue(text);
+          }}
+          style={{
+            height: 70,
+            width: 200,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+            borderRadius: 4,
+            color: 'white',
+            fontSize: 16,
+          }}
+        />
+      </View>
       <TouchableOpacity
         onPress={() => {
-          insetOne(database, {
-            id: Math.floor(Math.random() * 10 + 1),
-            name: Math.floor(Math.random() * 10000) + ' test',
-            age: Math.round(Math.random() * 340),
-          });
-        }}>
-        <Text style={{fontSize: 30, color: 'orange'}}>Create</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          //  console.log( getAll(database));
-          // console.log(findOne(database, 'id < 4'));
           console.log(
-            prettify(sort(findAll(database, 'id < 100'), 'id', false)),
+            prettify(
+              getAll(
+                openDB(
+                  CityConfig.path,
+                  CityConfig.schema,
+                  CityConfig.schemaVersion,
+                  CityConfig.migration,
+                ),
+              ),
+            ),
           );
-          // console.log(findById(database, 2));
         }}>
         <Text style={{fontSize: 30, color: 'orange'}}>Find</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          // updateOne(database, 'id = 10', {name: 'John Doe', age: 13});
-          updateById(database, 11, {
-            name: 'Sonia Crimson',
-            age: 22,
-            occupation: 'Teacher',
-          });
-        }}>
-        <Text style={{fontSize: 30, color: 'crimson'}}>Update</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          // updateOne(database, 'id = 10', {name: 'John Doe', age: 13});
-          // deleteOne(database, 'id = 5');
-          // deleteAll(database);
-          // deleteMany(database, 'age < 300');
-          deleteById(database, 1);
+          // deleteAll(zoneDB);
+          deleteAll(
+            openDB(
+              TimezoneConfig.path,
+              TimezoneConfig.schema,
+              TimezoneConfig.schemaVersion,
+              TimezoneConfig.migration,
+            ),
+          );
+          deleteAll(
+            openDB(
+              CityConfig.path,
+              CityConfig.schema,
+              CityConfig.schemaVersion,
+              CityConfig.migration,
+            ),
+          );
+          const {path, schema, schemaVersion} = AppConfig;
+          const db = openDB(path, schema, schemaVersion);
+          console.log(db);
+          deleteAll(db);
         }}>
         <Text style={{fontSize: 30, color: 'crimson'}}>Delete</Text>
       </TouchableOpacity>
+      <Text style={{fontSize: 15, color: 'aqua'}}>{zoneData[0]?.text}</Text>
+      <FlatList
+        data={cityData}
+        keyExtractor={(item) => item._id}
+        renderItem={({item}) => {
+          return (
+            <Text style={{fontSize: 15, color: 'aqua'}} key={item._id}>
+              {item?.city}
+            </Text>
+          );
+        }}
+      />
     </View>
   );
 };
 
-export default Alarm;
+const stateToProps = (state: any) => ({
+  zoneDB: state.timezone.database.zone,
+  zoneData: state.timezone.zone.byList,
+  cityDB: state.timezone.database.city,
+  cityData: state.timezone.city.byList,
+});
+
+const dispatchToProps = {
+  insertOne,
+  findOne,
+  findAll,
+  insertMany,
+};
+export default connect(stateToProps, dispatchToProps)(Alarm);
