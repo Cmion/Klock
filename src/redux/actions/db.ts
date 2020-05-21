@@ -1,166 +1,241 @@
-import {createActionType} from '../../_shared/utils/Helpers';
-import {ObjectSchema} from 'realm';
+import {
+  createActionString,
+  createActionType,
+} from '../../_shared/utils/Helpers';
+import {ObjectSchema, MigrationCallback} from 'realm';
 
 const entity = 'DATABASE';
 export const USE_DB = createActionType('USE_DB', entity);
-export const INIT_DB = createActionType('INIT_DB', entity);
-export const UPDATE_ONE = createActionType('UPDATE_ONE', entity);
-export const UPDATE_MANY = createActionType('UPDATE_MANY', entity);
-export const UPDATE_BY_ID = createActionType('UPDATE_BY_ID', entity);
-export const INSERT_ONE = createActionType('INSERT_ONE', entity);
-export const INSERT_MANY = createActionType('INSERT_MANY', entity);
-export const GET_ALL = createActionType('GET_ALL', entity);
-export const FIND_ONE = createActionType('FIND_ONE', entity);
-export const FIND_ALL = createActionType('FIND_ALL', entity);
-export const FIND_BY_ID = createActionType('FIND_BY_ID', entity);
-export const DELETE_ONE = createActionType('DELETE_ONE', entity);
-export const DELETE_MANY = createActionType('DELETE_MANY', entity);
-export const DELETE_ALL = createActionType('DELETE_ALL', entity);
-export const DELETE_BY_ID = createActionType('DELETE_BY_ID', entity);
+export const INIT_DB = createActionString('INIT_DB', entity);
+export const UPDATE_ONE = createActionString('UPDATE_ONE', entity);
+export const UPDATE_MANY = createActionString('UPDATE_MANY', entity);
+export const UPDATE_BY_ID = createActionString('UPDATE_BY_ID', entity);
+export const INSERT_ONE = createActionString('INSERT_ONE', entity);
+export const INSERT_MANY = createActionString('INSERT_MANY', entity);
+export const GET_ALL = createActionString('GET_ALL', entity);
+export const FIND_ONE = createActionString('FIND_ONE', entity);
+export const FIND_ALL = createActionString('FIND_ALL', entity);
+export const FIND_BY_ID = createActionString('FIND_BY_ID', entity);
+export const DELETE_ONE = createActionString('DELETE_ONE', entity);
+export const DELETE_MANY = createActionString('DELETE_MANY', entity);
+export const DELETE_ALL = createActionString('DELETE_ALL', entity);
+export const DELETE_BY_ID = createActionString('DELETE_BY_ID', entity);
 
-export const initDB = (schemaConfig: Array<{}>) => ({
-  type: INIT_DB.START,
-  payload: schemaConfig,
-});
-export const deleteById = (
-  db: {database: Realm; name: string},
-  id: string | number,
+export const initDB = (
+  config:
+    | Array<{
+        schemaVersion: number;
+        schema: ObjectSchema;
+        migration: MigrationCallback;
+        path: string;
+        database: string;
+        onSuccess: string;
+      }>
+    | {
+        schemaVersion: number;
+        schema: ObjectSchema;
+        migration: MigrationCallback;
+        path: string;
+        database: string;
+        onSuccess: string;
+      },
 ) => ({
-  type: DELETE_BY_ID.START,
-  meta: {
-    db,
-    id,
-  },
-});
-export const deleteAll = (db: {database: Realm; name: string}) => ({
-  type: DELETE_ALL.START,
-  meta: {
-    db,
-  },
-});
-export const deleteMany = (
-  db: {database: Realm; name: string},
-  queryString: string,
-) => ({
-  type: DELETE_MANY.START,
-  meta: {
-    db,
-    queryString,
-  },
-});
-export const deleteOne = (
-  db: {database: Realm; name: string},
-  queryString: string,
-) => ({
-  type: DELETE_ONE.START,
-  meta: {
-    db,
-    queryString,
-  },
-});
-export const findById = (
-  db: {database: Realm; name: string},
-  id: string | number,
-) => ({
-  type: FIND_BY_ID.START,
-  meta: {
-    db,
-    id,
-  },
-});
-export const findAll = (
-  db: {database: Realm; name: string},
-  queryString: string,
-) => ({
-  type: FIND_ALL.START,
-  meta: {
-    db,
-    queryString,
-  },
-});
-export const findOne = (
-  db: {database: Realm; name: string},
-  queryString: string,
-) => ({
-  type: FIND_ONE.START,
-  meta: {
-    db,
-    queryString,
-  },
-});
-export const getAll = (db: {database: Realm; name: string}) => ({
-  type: GET_ALL.START,
-  meta: {
-    db,
-  },
-});
-export const insertMany = (
-  db: {database: Realm; name: string},
-  payload: Array<{}>,
-) => ({
-  type: INSERT_MANY.START,
-  meta: {
-    db,
-  },
-  payload,
-});
-export const insertOne = (
-  db: {database: Realm; name: string},
-  payload: object,
-) => ({
-  type: INSERT_ONE.START,
-  meta: {
-    db,
-  },
-  payload,
-});
-export const useDB = (config: {
-  schemaVersion: number;
-  schema: ObjectSchema;
-  migration: Function;
-  path: string;
-  database: string;
-}) => ({
-  type: USE_DB.START,
+  type: INIT_DB,
   meta: {
     config,
   },
 });
 
-export const UpdateOne = (
-  db: {database: Realm; name: string},
-  queryString: string,
-  payload: object,
-) => ({
-  type: UPDATE_ONE.START,
-  payload,
-  meta: {
-    db,
-    queryString,
-  },
-});
-export const UpdateMany = (
-  db: {database: Realm; name: string},
-  queryString: string,
-  payload: object,
-) => ({
-  type: UPDATE_MANY.START,
-  payload,
-  meta: {
-    db,
-    queryString,
-  },
-});
-
-export const UpdateById = (
-  db: {database: Realm; name: string},
+export const deleteById = (
+  db: string,
   id: string | number,
-  payload: object,
+  onSuccess: string,
 ) => ({
-  type: UPDATE_BY_ID.START,
-  payload,
+  type: DELETE_BY_ID,
   meta: {
     db,
     id,
+    onSuccess,
+  },
+});
+export const deleteAll = (db: string, onSuccess: string) => ({
+  type: DELETE_ALL,
+  meta: {
+    db,
+    onSuccess,
+  },
+});
+export const deleteMany = (
+  db: string,
+  queryString: string,
+  onSuccess: string,
+) => ({
+  type: DELETE_MANY,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+  },
+});
+export const deleteOne = (
+  db: string,
+  queryString: string,
+  onSuccess: string,
+) => ({
+  type: DELETE_ONE,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+  },
+});
+export const findById = ({
+  db,
+  id,
+  onSuccess,
+  sort,
+}: {
+  db: string;
+  id: string | number;
+  onSuccess: string;
+  sort: {param: string; order: string};
+}) => ({
+  type: FIND_BY_ID,
+  meta: {
+    db,
+    id,
+    onSuccess,
+    sort,
+  },
+});
+export const findAll = ({
+  db,
+  queryString,
+  onSuccess,
+  sort,
+}: {
+  db: string;
+  queryString: string;
+  onSuccess: string;
+  sort: {param: string; order: string};
+}) => ({
+  type: FIND_ALL,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+    sort,
+  },
+});
+export const findOne = ({
+  db,
+  queryString,
+  onSuccess,
+  sort,
+}: {
+  db: string;
+  queryString: string;
+  onSuccess: string;
+  sort: {param: string; order: string};
+}) => ({
+  type: FIND_ONE,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+    sort,
+  },
+});
+export const getAll = ({
+  db,
+  onSuccess,
+  sort,
+}: {
+  db: string;
+  onSuccess: string;
+  sort: {param: string; order: string};
+  sortParam: string;
+}) => ({
+  type: GET_ALL,
+  meta: {
+    db,
+    onSuccess,
+    sort,
+  },
+});
+export const insertMany = ({
+  db,
+  data,
+  onSuccess,
+}: {
+  db: string;
+  data: Array<{}>;
+  onSuccess: string;
+}) => ({
+  type: INSERT_MANY,
+  meta: {
+    db,
+    onSuccess,
+  },
+  payload: data,
+});
+export const insertOne = ({
+  db,
+  data,
+  onSuccess,
+}: {
+  db: string;
+  data: any;
+  onSuccess: string;
+}) => ({
+  type: INSERT_ONE,
+  meta: {
+    db,
+    onSuccess,
+  },
+  payload: data,
+});
+
+export const updateOne = (
+  db: string,
+  queryString: string,
+  data: object,
+  onSuccess: string,
+) => ({
+  type: UPDATE_ONE,
+  payload: data,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+  },
+});
+export const updateMany = (
+  db: string,
+  queryString: string,
+  data: object,
+  onSuccess: string,
+) => ({
+  type: UPDATE_MANY,
+  payload: data,
+  meta: {
+    db,
+    queryString,
+    onSuccess,
+  },
+});
+
+export const updateById = (
+  db: string,
+  id: string | number,
+  data: object,
+  onSuccess: string,
+) => ({
+  type: UPDATE_BY_ID,
+  payload: data,
+  meta: {
+    db,
+    id,
+    onSuccess,
   },
 });

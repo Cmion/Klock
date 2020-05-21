@@ -1,56 +1,61 @@
-import realm, {ObjectSchema} from 'realm';
+import Realm, {ObjectSchema, MigrationCallback} from 'realm';
+import {objectId} from '../Helpers';
 
-type TimezoneProps = {
-  city: string;
-  country: string;
-  countryCode: string;
-  long: number;
-  lat: number;
-  offsets: number[];
-};
-export const useDB = (
+export const openDB = (
   path: string,
-  schema: ObjectSchema,
+  schema: ObjectSchema | Array<ObjectSchema>,
   schemaVersion: number,
+  migration?: MigrationCallback,
 ) => {
   try {
-    const database = new realm({path, schema: [schema], schemaVersion});
-    return {database, name: schema.name};
+    const database = new Realm({
+      path,
+      schema: [schema].flat(),
+      schemaVersion,
+      migration,
+    });
+    return {
+      database,
+      name: Array.isArray(schema) ? schema[0].name : schema.name,
+    };
   } catch (e) {
     throw e;
   }
 };
 
 export const insertOne = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   data: object,
 ) => {
   const {database, name} = db;
-  database.write(() => {
-    const alreadyExist = database
-      .objects(name)
-      .filtered(`_id == "${data._id || 0}"`);
-    if (!alreadyExist || alreadyExist.length <= 0) {
-      database.create(name, data);
-      console.info('Data successfully added to collection');
-    } else {
-      const keys = Object.keys(data);
-      keys.forEach((value) => {
-        //   if (open.objects(schema.name).filtered(data.city).length === 0) {
-        if (value !== 'id') {
-          alreadyExist[value] = data[value];
-        }
-        //   }
+  try {
+    database.write(() => {
+      database.create(name, {...data, _id: objectId()});
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const insertMany = (
+  db: {database: Realm; name: string},
+  data: Array<object>,
+) => {
+  const {database, name} = db;
+
+  try {
+    database.write(() => {
+      data.forEach((value) => {
+        database.create(name, {...value, _id: objectId()});
       });
-      console.info(
-        'Data already existed in collection, existing data has been successfully updated',
-      );
-    }
-  });
+    });
+  } catch (e) {
+    throw e;
+  }
 };
 
 export const findOne = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string, // Eg: city=London
 ) => {
   const {database, name} = db;
@@ -62,7 +67,7 @@ export const findOne = (
   }
 };
 export const findAll = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string, // Eg: city=London
 ) => {
   const {database, name} = db;
@@ -75,19 +80,19 @@ export const findAll = (
 };
 
 export const findById = (
-  db: {database: realm; name: string},
-  id: string | number, // Eg: city=London
+  db: {database: Realm; name: string},
+  id: string, // Eg: city=London
 ) => {
   const {database, name} = db;
   try {
-    let response = database.objects(name).filtered(`id = ${String(id)}`)[0];
+    let response = database.objectForPrimaryKey(name, id);
     return response;
   } catch (e) {
     throw new Error(e);
   }
 };
 
-export const getAll = (db: {database: realm; name: string}) => {
+export const getAll = (db: {database: Realm; name: string}) => {
   const {database, name} = db;
   try {
     let response = database.objects(name);
@@ -97,16 +102,17 @@ export const getAll = (db: {database: realm; name: string}) => {
   }
 };
 
-export const sort = (db: realm, sortParam: string, order: boolean = false) =>
+export const sort = (db: any, sortParam: string, order: boolean = false) =>
   db.sorted(sortParam, order);
+
 export const updateOne = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string,
   data: object,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(queryString)[0];
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name).filtered(queryString)[0];
+  if (!model || model.length <= 0) {
     console.warn('Cannot update a none existing data in collection ' + name);
     return;
   }
@@ -114,20 +120,20 @@ export const updateOne = (
     const keys = Object.keys(data);
     keys.forEach((value) => {
       if (value !== 'id') {
-        alreadyExist[value] = data[value];
+        model[value] = data[value];
       }
     });
     console.info('Collection updated successfully');
   });
 };
 export const updateById = (
-  db: {database: realm; name: string},
-  id: string | number,
+  db: {database: Realm; name: string},
+  id: string,
   data: object,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(`id = ${id}`)[0];
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objectForPrimaryKey(name, id);
+  if (!model || model.length <= 0) {
     console.warn('Cannot update a none existing data in collection ' + name);
     return null;
   }
@@ -135,25 +141,25 @@ export const updateById = (
     const keys = Object.keys(data);
     keys.forEach((value) => {
       if (value !== 'id') {
-        alreadyExist[value] = data[value];
+        model[value] = data[value];
       }
     });
     console.info('Collection updated successfully');
   });
 };
 export const updateMany = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string,
   data: object,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(queryString);
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name).filtered(queryString);
+  if (!model || model.length <= 0) {
     console.warn('Cannot update a none existing data in collection ' + name);
     return;
   }
   database.write(() => {
-    alreadyExist.forEach((element: object) => {
+    model.forEach((element: object) => {
       const keys = Object.keys(data);
       keys.forEach((value: string) => {
         if (value !== 'id') {
@@ -166,61 +172,62 @@ export const updateMany = (
 };
 
 export const deleteOne = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(queryString)[0];
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name).filtered(queryString)[0];
+  if (!model || model.length <= 0) {
     console.warn('Cannot update a none existing data in collection ' + name);
     return;
   }
   database.write(() => {
-    database.delete(alreadyExist);
+    database.delete(model);
     console.info('Data successfully deleted from collection');
   });
 };
 export const deleteById = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   id: number | string,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(`id = ${id}`)[0];
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name).filtered(`id = ${id}`)[0];
+  if (!model || model.length <= 0) {
     console.warn('Cannot update a none existing data in collection ' + name);
     return;
   }
   database.write(() => {
-    database.delete(alreadyExist);
+    database.delete(model);
     console.info('Data successfully deleted from collection');
   });
 };
-export const deleteAll = (db: {database: realm; name: string}) => {
+export const deleteAll = (db: {database: Realm; name: string}) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name);
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name);
+  if (!model || model.length <= 0) {
     console.warn('Cannot delete a none existing collection ' + name);
     return;
   }
   database.write(() => {
-    database.delete(alreadyExist);
+    database.delete(model);
     console.info('Data successfully deleted collection');
   });
 };
 
 export const deleteMany = (
-  db: {database: realm; name: string},
+  db: {database: Realm; name: string},
   queryString: string,
 ) => {
   const {database, name} = db;
-  const alreadyExist = database.objects(name).filtered(queryString);
-  if (!alreadyExist || alreadyExist.length <= 0) {
+  const model = database.objects(name).filtered(queryString);
+  if (!model || model.length <= 0) {
     console.warn('Cannot delete a none existing data in collection ' + name);
     return;
   }
   database.write(() => {
-    database.delete(alreadyExist);
+    database.delete(model);
     console.info('Collection data deleted successfully');
   });
 };
-export const prettify = (db: any) => JSON.stringify(Array.from(db), null, '\t');
+export const prettify = (data: any) =>
+  JSON.stringify(Array.from(data), null, '\t');

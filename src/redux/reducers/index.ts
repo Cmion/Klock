@@ -1,8 +1,10 @@
 import uiReducer from './ui';
-import dbReducer from './db';
+import appReducer from './app';
+import timezoneReducer from './timezone';
 import {combineReducers} from 'redux';
 
 export default combineReducers({
+  app: appReducer,
   ui: uiReducer,
-  db: dbReducer,
+  timezone: timezoneReducer,
 });
