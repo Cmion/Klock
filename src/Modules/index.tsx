@@ -32,10 +32,10 @@ const ModuleConfig: Array<ModuleProps> = [
     icon: 'timer',
     component: Stopwatch,
   },
-  {
-    name: 'Fitness',
-    icon: 'fitness-center',
-    component: Fitness,
-  },
+  // {
+  //   name: 'Fitness',
+  //   icon: 'fitness-center',
+  //   component: Fitness,
+  // },
 ];
 export default ModuleConfig;

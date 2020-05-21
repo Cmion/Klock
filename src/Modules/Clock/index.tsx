@@ -1,41 +1,28 @@
 import React from 'react';
-import {View, Text, StyleSheet, StatusBar, Button} from 'react-native';
-import CreateStackNav from '../../_shared/utils/CreateStackNav';
+import {StatusBar, Dimensions} from 'react-native';
+import CreateStackNav from '../../_shared/components/CreateStackNav';
+import CreateDrawerNav from '../../_shared/components/CreateDrawerNav';
 import Layout from './Layout';
 import Color from '../../_shared/utils/Color';
-import Font from '../../_shared/utils/Font';
+import Timezone from '../../_shared/components/Timezone';
+import Header from '../../_shared/components/Partials/Header';
 
-interface TZProps {
-  navigation: Required<{
-    navigate: Function;
-  }>;
-}
-const TimeZone = ({navigation}: TZProps) => (
-  <View style={styles.container}>
-    <Text style={styles.text}>Timezone View</Text>
-    <Button
-      title={'Navigate to Layout'}
-      onPress={() => {
-        navigation.navigate('Layout');
-      }}
-    />
-  </View>
+const {width} = Dimensions.get('window');
+const Drawer = () => (
+  <CreateDrawerNav
+    config={[
+      {
+        component: Layout,
+        name: 'Clock',
+      },
+    ]}
+    navigatorProps={{
+      drawerStyle: {
+        width,
+      },
+    }}
+  />
 );
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Color.BACKGROUND,
-  },
-  text: {
-    fontSize: 30,
-    color: Color.PRIMARY,
-    fontFamily: Font.NORMAL,
-    marginBottom: 20,
-  },
-});
 const Clock = () => {
   return (
     <>
@@ -47,19 +34,28 @@ const Clock = () => {
       <CreateStackNav
         config={[
           {
-            name: 'Layout',
-            component: Layout,
-          },
-          {
-            name: 'Timezone',
-            component: TimeZone,
+            name: 'Clock',
+            component: Drawer,
+            screenOptions: {
+              options: {
+                headerStyle: {backgroundColor: 'transparent'},
+                header: ({routes, navigation}) => {
+                  return (
+                    <Header
+                      useDrawerMenu
+                      routeName={'Clock'}
+                      navigation={navigation}
+                    />
+                  );
+                },
+              },
+            },
           },
         ]}
         navigatorProps={{
-          headerMode: 'none',
-          mode: 'modal',
           screenOptions: {
-            headerShown: 'false',
+            headerShown: true,
+            gestureEnabled: true,
           },
         }}
       />

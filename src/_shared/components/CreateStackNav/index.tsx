@@ -10,6 +10,7 @@ type StackConfig = {
   }>;
   name: string;
   initialParams?: object;
+  screenOptions?: object;
 };
 interface Stack {
   config: Array<StackConfig>;
@@ -26,6 +27,7 @@ const Main = ({config, navigatorProps}: Stack) => {
         const initialParams: object = value?.initialParams || {};
         const component = value?.component;
         const name: string = value?.name || `Stack_${key}`;
+        const screenOptions: object = value?.screenOptions || {};
 
         return (
           <Stacks.Screen
@@ -33,6 +35,7 @@ const Main = ({config, navigatorProps}: Stack) => {
             name={name}
             component={component}
             initialParams={initialParams}
+            {...screenOptions}
           />
         );
       })}
