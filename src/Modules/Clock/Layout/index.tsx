@@ -1,12 +1,7 @@
 import React, {useState, useMemo} from 'react';
-import {
-  View,
-  Text,
-  Dimensions,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {View, Text, Dimensions, ScrollView} from 'react-native';
 import Color from '../../../_shared/utils/Color';
+import {CLOCKSIZE} from '../../../_shared/utils/Constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../../_shared/components/Partials/Button';
 import ClockUI from '../../../_shared/components/ClockUI';
@@ -119,7 +114,8 @@ export default ({navigation}: LayoutProps) => {
     [],
   );
 
-  const HEIGHT = height * 0.58;
+  const HEIGHT = height * 0.5;
+  //Todo: Check scaling and tranformation values on different screens as it depends on screen width|height
   return (
     <View style={styles.container}>
       <View
@@ -140,7 +136,7 @@ export default ({navigation}: LayoutProps) => {
                 },
                 {
                   scale: deltaY.interpolate({
-                    inputRange: [-(width - 300), -(width - 300), 0, 0],
+                    inputRange: [-(width * 0.7), -(width * 0.7), 0, 0],
                     outputRange: [0, 0, 1, 1],
                   }),
                 },
@@ -148,7 +144,7 @@ export default ({navigation}: LayoutProps) => {
             },
           ]}>
           <ClockUI
-            size={width - 150}
+            size={CLOCKSIZE}
             borderWidth={12}
             onTimeChange={(e: object) => {
               setTime(e);
@@ -162,8 +158,8 @@ export default ({navigation}: LayoutProps) => {
             transform: [
               {
                 translateY: deltaY.interpolate({
-                  inputRange: [-(width - 200), -(width - 200), 0, 0],
-                  outputRange: [-(width - 100), -(width - 100), 0, 0],
+                  inputRange: [-(width * 0.9), -(width * 0.9), 0, 0],
+                  outputRange: [-(width * 0.9), -(width * 0.9), 0, 0],
                 }),
               },
             ],
@@ -175,23 +171,12 @@ export default ({navigation}: LayoutProps) => {
                 .format('ddd DD, MMMM')}{' '}
             </Text>
           </View>
-          <View style={styles.btnContainer}>
-            <Button
-              title={'Add New'}
-              onPress={() => {
-                navigation.navigate('Timezone');
-              }}
-              icon={({color}) => (
-                <Icon name={'language'} size={30} color={color} />
-              )}
-            />
-          </View>
         </Animated.View>
       </View>
       <Interactable.View
         verticalOnly={true}
-        snapPoints={[{y: 0}, {y: -HEIGHT + 200, id: 'bottom'}]}
-        boundaries={{top: -HEIGHT + 200}}
+        snapPoints={[{y: 0}, {y: -height * 0.45, id: 'bottom'}]}
+        boundaries={{top: -height * 0.45}}
         onSnap={onSnap}
         animatedValueY={deltaY}>
         <ScrollView
@@ -224,6 +209,20 @@ export default ({navigation}: LayoutProps) => {
           </View>
         </ScrollView>
       </Interactable.View>
+      <View style={styles.btnContainer}>
+        <Button
+          icon={() => (
+            <Icon name={'language'} size={35} color={Color.BACKGROUND} />
+          )}
+          height={60}
+          title={''}
+          width={60}
+          borderRadius={60}
+          onPress={() => {
+            navigation.navigate('Timezone');
+          }}
+        />
+      </View>
     </View>
   );
 };

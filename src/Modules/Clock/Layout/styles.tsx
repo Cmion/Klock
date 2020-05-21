@@ -47,7 +47,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    marginTop: 40,
+    marginTop: 10,
   },
   currentDateAndAlarm: {
     alignItems: 'center',
@@ -63,9 +63,11 @@ export default StyleSheet.create({
     textTransform: 'uppercase',
   },
   btnContainer: {
+    position: 'absolute',
+    width: width,
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
+    bottom: 90,
   },
   timezones: {paddingTop: 10},
   timezoneUi: {

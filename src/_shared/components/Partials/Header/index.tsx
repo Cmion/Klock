@@ -1,12 +1,10 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   TextInput,
   Dimensions,
   TouchableOpacity,
-  Modal,
-  StatusBar,
 } from 'react-native';
 import {connect} from 'react-redux';
 import {getHeaderSearchValue} from '../../../../redux/actions';
@@ -51,7 +49,7 @@ const Header = (props: HeaderProps) => {
   const useBorder = props?.useBorder || false;
   const navigation = props?.navigation;
   const useElevation = props?.useElevation || false;
-  const headerKey = props?.headerKey || '';
+  // const headerKey = props?.headerKey || '';
   const setSearchValue =
     props?.getHeaderSearchValue ||
     function () {
@@ -61,7 +59,7 @@ const Header = (props: HeaderProps) => {
   const searchOn = props?.searchOn || false;
 
   const [searchOpen, setSearchOpen] = useState(searchOn);
-  const [modalOpen, setModalOpen] = useState(false);
+  // const [modalOpen, setModalOpen] = useState(false);
 
   if (useDrawerMenu && useModalMenu) {
     throw new Error('Cannot use both drawerMenu and modalMenu');

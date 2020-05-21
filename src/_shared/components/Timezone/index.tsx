@@ -5,8 +5,8 @@ import {
   StyleSheet,
   StatusBar,
   Dimensions,
-  ScrollView,
-  SectionList,
+  TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import Color from '../../utils/Color';
 import Switch from '../Partials/Switch';
@@ -14,16 +14,10 @@ import Checkbox from '../Partials/Checkbox';
 import Font from '../../utils/Font';
 import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// import 'react-native-get-random-values';
-// import {v4 as uuidV4} from 'uuid';
-import {getAll, insertOne, sort, prettify} from '../../utils/RealmDB';
-// import LargeList from 'react-native-largelist-v3';
 
-// import uuid from 'uuid/dist/esm-node/v5';
+import {getAll, insertOne, sort, prettify} from '../../utils/RealmDB';
+
 import moment from 'moment';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {getItemLayout} from '../../utils/Helpers';
-// import {ScrollView} from 'react-native-gesture-handler';
 
 const {height, width} = Dimensions.get('window');
 
@@ -93,18 +87,9 @@ class TimezoneList extends React.PureComponent {
 const Timezone = ({navigation, route, searchValue, timezoneDB}) => {
   const sectionRef = useRef();
   useEffect(() => {
-    insertOne(timezoneDB, {
-      _id: 'ci',
-      country: "Côte d'Ivoire",
-      countryCode: 'CI',
-      long: -4.033333333333333,
-      lat: 5.316666666666666,
-      city: 'Abidjan',
-      offsets: [0],
-    });
     console.log(prettify(getAll(timezoneDB)));
-    navigation.setParams({useElevation: false});
   }, []);
+
   // console.log(itemsLayout);
   const DATA = Array(0)
     .fill(0)
@@ -121,17 +106,11 @@ const Timezone = ({navigation, route, searchValue, timezoneDB}) => {
         styles.container,
         {flexDirection: 'row', justifyContent: 'space-between'},
       ]}>
-      <SectionList
-        sections={DATA}
-        ref={sectionRef}
+      <FlatList
+        data={DATA}
         keyExtractor={(item, index) => item + index}
         renderItem={({item}) => <TimezoneList title={item} />}
         style={{paddingTop: 20}}
-        onScrollToIndexFailed={(data) => console.log(data)}
-        getItemLayout={(data, index) => {
-          console.log(`getItemLayout called with index: ${index}`);
-          return {length: 89, offset: 89 * index, index: index};
-        }}
         ListEmptyComponent={() => (
           <View
             style={{

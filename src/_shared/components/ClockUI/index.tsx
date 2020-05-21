@@ -78,7 +78,7 @@ const ClockUI = React.memo(
       <View
         style={[
           styles.container,
-          {height: size, width: size, borderWidth, borderRadius: CY},
+          {height: size, width: size, borderWidth, borderRadius: size},
         ]}>
         <Ticks
           height={size - borderWidth - 90}

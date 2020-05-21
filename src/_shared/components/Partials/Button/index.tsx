@@ -41,7 +41,7 @@ interface ButtonProps {
   icon: FunctionComponent<{
     color: string;
   }>;
-  title: string;
+  title?: string;
   onPress: Function;
   width?: number;
   height?: number;
@@ -70,14 +70,17 @@ const Button = ({
       onPress={() => {
         onPress();
       }}>
-      <View style={[styles.iconContainer, {paddingRight: Icon ? 10 : 0}]}>
+      <View
+        style={[styles.iconContainer, {paddingRight: Icon && title ? 10 : 0}]}>
         {Icon ? <Icon color={color || Color.DARK} /> : null}
       </View>
-      <View style={styles.textContainer}>
-        <Text style={[styles.btnText, {fontFamily, fontSize, color}]}>
-          {title ? title : 'Button'}
-        </Text>
-      </View>
+      {title ? (
+        <View style={styles.textContainer}>
+          <Text style={[styles.btnText, {fontFamily, fontSize, color}]}>
+            {title ? title : null}
+          </Text>
+        </View>
+      ) : null}
     </TouchableOpacity>
   );
 };
