@@ -22,7 +22,7 @@ interface LoopConfig {
   autoStart?: boolean;
 }
 export const loop = (loopConfig: LoopConfig) => {
-  const {clock, easing, duration, boomerang, autoStart} = {
+  const { clock, easing, duration, boomerang, autoStart } = {
     clock: new Clock(),
     easing: Easing.linear,
     duration: 250,
@@ -73,7 +73,7 @@ export const runTiming = (
 ): Animated.Node<number> => {
   const clock = timingConfig.clock || new Clock();
   const from = timingConfig.from || 0;
-  const to = timingConfig.to || 10;
+  const to = timingConfig.to || 0;
   const state = {
     finished: new Value(0),
     position: new Value(0),

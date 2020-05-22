@@ -1,13 +1,12 @@
-import React, {useMemo, useState, useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
-import Svg, {Circle} from 'react-native-svg';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 
 import Color from '../../utils/Color';
 import Ticks from './Ticks';
 import Hours from './Hours';
 import Hands from './Hands';
-import {time2Angle} from '../../utils/AnimationHelpers';
-import moment from 'moment';
+import { time2Angle } from '../../utils/AnimationHelpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,7 +29,7 @@ interface ClockUIProps {
   useWatch?: boolean;
 }
 const ClockUI = React.memo(
-  ({size, borderWidth, onTimeChange, watchUnit, useWatch}: ClockUIProps) => {
+  ({ size, borderWidth, onTimeChange, watchUnit, useWatch }: ClockUIProps) => {
     const [seconds, setSeconds] = useState(new Date().getSeconds());
     const [minutes, setMinutes] = useState(new Date().getMinutes());
     const [hours, setHours] = useState(new Date().getHours());
@@ -44,7 +43,7 @@ const ClockUI = React.memo(
       [],
     );
 
-    const {CX, CY, mapWatchUnitToTimeUnit, timeChange} = useMemo(
+    const { CX, CY, mapWatchUnitToTimeUnit, timeChange } = useMemo(
       () => ({
         CX: size / 2,
         CY: size / 2,
@@ -59,26 +58,26 @@ const ClockUI = React.memo(
             ? hrs
             : [],
       }),
-      [],
+      [onTimeChange, watchUnit, size],
     );
 
     useEffect(() => {
       if (useWatch && watchUnit && watchUnit !== 'all')
-        timeChange({hours, minutes, seconds});
+        timeChange({ hours, minutes, seconds });
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapWatchUnitToTimeUnit(seconds, minutes, hours)]);
 
     useEffect(() => {
       timer();
       if (useWatch && watchUnit === 'all')
-        timeChange({hours, minutes, seconds});
+        timeChange({ hours, minutes, seconds });
     }, [seconds, minutes, hours, timer, useWatch, watchUnit, timeChange]);
 
     return (
       <View
         style={[
           styles.container,
-          {height: size, width: size, borderWidth, borderRadius: size},
+          { height: size, width: size, borderWidth, borderRadius: size },
         ]}>
         <Ticks
           height={size - borderWidth - 90}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,19 +6,22 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import {connect} from 'react-redux';
-import {getHeaderSearchValue} from '../../../../redux/actions';
+import { connect } from 'react-redux';
+import {
+  getHeaderSearchValue,
+  headerSearchClose,
+} from '../../../../redux/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Color from '../../../utils/Color';
 import styles from './styles';
-import Animated, {Easing} from 'react-native-reanimated';
-import {runTiming} from '../../../utils/AnimationHelpers';
+import Animated, { Easing } from 'react-native-reanimated';
+import { runTiming } from '../../../utils/AnimationHelpers';
 
 interface TZProps {
   navigate: Function;
   goBack: Function;
 }
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 type HeaderProps = {
   useBackIcon?: boolean;
@@ -56,6 +59,7 @@ const Header = (props: HeaderProps) => {
       return null;
     };
   const searchValue = props?.header?.search?.value;
+  const headerSearchClose = props?.headerSearchClose;
   const searchOn = props?.searchOn || false;
 
   const [searchOpen, setSearchOpen] = useState(searchOn);
@@ -92,11 +96,14 @@ const Header = (props: HeaderProps) => {
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.backBtn}
-            onPress={() =>
-              typeof navigation.goBack === 'function'
-                ? navigation.goBack()
-                : null
-            }>
+            onPress={() => {
+              if (typeof navigation?.goBack === 'function') {
+                navigation?.goBack();
+              }
+              if (useSearch) {
+                headerSearchClose(true);
+              }
+            }}>
             <Icon name={'arrow-back'} size={26} color={'white'} />
           </TouchableOpacity>
         )}
@@ -127,7 +134,10 @@ const Header = (props: HeaderProps) => {
           <TouchableOpacity
             style={styles.menu}
             activeOpacity={0.7}
-            onPress={() => setSearchOpen(true)}>
+            onPress={() => {
+              setSearchOpen(true);
+              headerSearchClose(false);
+            }}>
             <Icon name={'search'} size={30} color={Color.TEXTPRIMARY} />
           </TouchableOpacity>
           {useModalMenu && (
@@ -154,7 +164,9 @@ const Header = (props: HeaderProps) => {
             placeholderTextColor={Color.TEXTSECONDARY}
             value={searchValue}
             autoFocus={searchOn}
-            onChangeText={(text) => setSearchValue(text)}
+            onChangeText={(text) =>
+              setSearchValue({ value: text, touched: true })
+            }
             style={[
               styles.textInput,
               {
@@ -165,7 +177,10 @@ const Header = (props: HeaderProps) => {
           <TouchableOpacity
             style={[styles.menu, styles.padLeft]}
             activeOpacity={0.7}
-            onPress={() => setSearchOpen(false)}>
+            onPress={() => {
+              setSearchOpen(false);
+              headerSearchClose(true);
+            }}>
             <Icon name={'close'} size={30} color={Color.TEXTPRIMARY} />
           </TouchableOpacity>
         </View>
@@ -180,5 +195,6 @@ const stateToProps = (state) => ({
 
 const dispatchToProps = {
   getHeaderSearchValue,
+  headerSearchClose,
 };
 export default connect(stateToProps, dispatchToProps)(Header);

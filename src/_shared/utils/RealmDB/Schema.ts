@@ -1,4 +1,4 @@
-import {MigrationCallback, ObjectSchema} from 'realm';
+import { MigrationCallback, ObjectSchema } from 'realm';
 
 export const TimezonesSchema = {
   name: 'Timezones',
@@ -26,13 +26,15 @@ export const CitySchema = {
   primaryKey: '_id',
   properties: {
     _id: 'string',
+    createdAt: { type: 'date', default: new Date().toString(), optional: true },
+    updatedAt: { type: 'date', default: new Date().toString(), optional: true },
     city: 'string',
     city_short: 'string',
     country: 'string',
     country_code: 'string',
-    timezone: 'string',
+    utcOffset: 'string',
     dst: 'string[]',
-    isSelected: {type: 'bool', default: false, optional: true},
+    isSelected: { type: 'bool', default: false, optional: true },
   },
 };
 
@@ -41,7 +43,7 @@ export const AppInit = {
   primaryKey: '_id',
   properties: {
     _id: 'string',
-    isInitialized: {type: 'bool', default: false},
+    isInitialized: { type: 'bool', default: false },
   },
 };
 export const TimezoneConfig = {
@@ -55,14 +57,16 @@ export const TimezoneConfig = {
 
       // loop through all objects and set the name property in the new schema
       for (let i = 0; i < oldObjects.length; i++) {
-        newObjects[i].offset = Number(oldObjects.offset[0]);
+        // newObjects[i].offset = Number(oldObjects.offset[0]);
+        // newObjects[i].createdAt = new Date().toString();
+        // newObjects[i].updatedAt = new Date().toString();
       }
     }
   },
 };
 export const CityConfig = {
   schema: CitySchema,
-  schemaVersion: 3,
+  schemaVersion: 4,
   path: 'KLOCK_CITY_EXP.realm',
   migration: function (oldRealm: Realm, newRealm: Realm) {
     if (oldRealm.schemaVersion < 3) {
@@ -71,7 +75,9 @@ export const CityConfig = {
 
       // loop through all objects and set the name property in the new schema
       for (let i = 0; i < oldObjects.length; i++) {
-        newObjects[i].isSelected = false;
+        newObjects[i].offset = Number(oldObjects.offset[0]);
+        newObjects[i].createdAt = new Date().toString();
+        newObjects[i].updatedAt = new Date().toString();
       }
     }
   },

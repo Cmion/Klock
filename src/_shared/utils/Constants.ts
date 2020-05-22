@@ -1,9 +1,9 @@
-import {Dimensions} from 'react-native';
+import { Dimensions } from 'react-native';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export const TABBARWIDTH = width * 0.9;
-export const CLOCKSIZE = width * 0.8;
+export const CLOCKSIZE = width * 0.6;
 export const TABBARHEIGHT = 80; // height + bottom margin
 export const Collection = {
   CITY: 'city',

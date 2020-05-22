@@ -1,7 +1,7 @@
-import React, {PureComponent} from 'react';
-import {StyleSheet, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {runTiming, clampNumber} from '../../../utils/AnimationHelpers';
+import React, { PureComponent } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { runTiming, clampNumber } from '../../../utils/AnimationHelpers';
 
 import Animated, {
   Value,
@@ -13,9 +13,7 @@ import Animated, {
 import Color from '../../../utils/Color';
 
 const AnimatedIcon = Animated.createAnimatedComponent(Icon);
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(
-  TouchableOpacity,
-);
+
 const styles = StyleSheet.create({
   centerAll: {
     alignItems: 'center',
@@ -29,14 +27,15 @@ type CheckboxProps = {
   size?: number;
   tintColor?: string;
   backgroundColor?: string;
-  onValueChanged: Function;
+  onValueChanged?: Function;
+  useBordered?: boolean;
 };
 class Checkbox extends PureComponent {
-  #STATECHANGED: number;
-  #BORDERWIDTH: number;
-  #SIZE: number;
-  #ICONSIZE: number;
-  #TINTCOLOR: string;
+  private STATECHANGED: number;
+  private BORDERWIDTH: number;
+  private SIZE: number;
+  private ICONSIZE: number;
+  private TINTCOLOR: string;
   state: {
     checked: boolean;
     disabled: boolean;
@@ -45,11 +44,11 @@ class Checkbox extends PureComponent {
 
   constructor(props: CheckboxProps) {
     super(props);
-    this.#STATECHANGED = -1;
-    this.#BORDERWIDTH = (props.size || 27) > 27 ? 2 : 1.5;
-    this.#SIZE = clampNumber(props.size || 22.5, 50, 22.5);
-    this.#ICONSIZE = Math.round(this.#SIZE * 0.6);
-    this.#TINTCOLOR = props.tintColor || Color.PRIMARY;
+    this.STATECHANGED = -1;
+    this.BORDERWIDTH = (props.size || 27) > 27 ? 1.5 : 1;
+    this.SIZE = clampNumber(props.size || 27, 50, 27);
+    this.ICONSIZE = Math.round(this.SIZE * 0.7);
+    this.TINTCOLOR = props.tintColor || Color.PRIMARY;
     this.props = props;
     this.state = {
       checked: props.checked || false,
@@ -57,14 +56,8 @@ class Checkbox extends PureComponent {
     };
   }
 
-  // componentDidMount() {
-  //   this.#STATECHANGED = -1;
-  // }
-  // componentDidUpdate() {
-  //   this.#STATECHANGED = -1;
-  // }
   render() {
-    const {backgroundColor} = this.props;
+    const { backgroundColor } = this.props;
     return (
       <TouchableOpacity
         accessibilityLabel={'checkbox'}
@@ -72,8 +65,8 @@ class Checkbox extends PureComponent {
         disabled={this.props.disabled}
         activeOpacity={0.8}
         onPress={() => {
-          this.#STATECHANGED = 0;
-          this.setState({...this.state, checked: !this.state.checked});
+          this.STATECHANGED = 0;
+          this.setState({ ...this.state, checked: !this.state.checked });
           typeof this.props.onValueChanged === 'function'
             ? this.props.onValueChanged(this.state.checked)
             : null;
@@ -82,31 +75,37 @@ class Checkbox extends PureComponent {
           styles.centerAll,
           // eslint-disable-next-line react-native/no-inline-styles
           {
-            height: this.#SIZE,
-            width: this.#SIZE,
-            borderWidth: this.#BORDERWIDTH,
-            borderColor: this.state.checked
-              ? backgroundColor || Color.BACKGROUND
-              : Color.TEXTSECONDARY,
-            borderRadius: this.#SIZE,
-            backgroundColor: this.state.checked
-              ? this.#TINTCOLOR
-              : 'transparent',
+            height: this.SIZE,
+            width: this.SIZE,
+            borderWidth: this.BORDERWIDTH,
+            borderColor:
+              this.state.checked && !this.props.useBordered
+                ? backgroundColor || Color.BACKGROUND
+                : this.state.checked && this.props.useBordered
+                ? this.TINTCOLOR
+                : Color.TEXTSECONDARY,
+            borderRadius: this.SIZE,
+            backgroundColor:
+              this.state.checked && !this.props.useBordered
+                ? this.TINTCOLOR
+                : 'transparent',
           },
         ]}>
         <AnimatedIcon
           name={'check'}
           color={
-            this.state.checked
+            this.state.checked && !this.props.useBordered
               ? backgroundColor || Color.BACKGROUND
+              : this.state.checked && this.props.useBordered
+              ? this.TINTCOLOR
               : Color.TEXTSECONDARY
           }
-          size={this.#ICONSIZE}
+          size={this.ICONSIZE}
           style={{
             transform: [
               {
                 scale: cond(
-                  greaterOrEq(this.#STATECHANGED, 0),
+                  greaterOrEq(this.STATECHANGED, 0),
                   runTiming({
                     duration: 100,
                     from: 0,

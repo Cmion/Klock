@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Animated from 'react-native-reanimated';
-import {PanGestureHandler, State} from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 const {
   add,
@@ -37,11 +37,14 @@ const DEFAULT_SNAP_DAMPING = 0.7;
 const DEFAULT_GRAVITY_STRENGTH = 400;
 const DEFAULT_GRAVITY_FALLOF = 40;
 
-function sq(x) {
+function sq(x: number) {
   return multiply(x, x);
 }
 
-function influenceAreaWithRadius(radius: number, anchor: {x: any; y: any}) {
+function influenceAreaWithRadius(
+  radius: number,
+  anchor: { x: number; y: number },
+) {
   return {
     left: (anchor.x || 0) - radius,
     right: (anchor.x || 0) + radius,
@@ -51,18 +54,33 @@ function influenceAreaWithRadius(radius: number, anchor: {x: any; y: any}) {
 }
 
 function snapTo(
-  target: {x: any; y: any},
+  target: { x: number; y: number },
   snapPoints: any[],
-  best: {x: any; y: any; tension: any; damping: any},
+  best: {
+    x: Animated.Value<number>;
+    y: Animated.Value<number>;
+    tension: Animated.Value<number>;
+    damping: Animated.Value<number>;
+  },
   clb: (arg0: {
-    nativeEvent: {index: any; x: undefined; y: undefined; id: any};
+    nativeEvent: { index: number; x: number; y: number; id: number };
   }) => any,
   dragClb: (arg0: {
-    nativeEvent: {x: any; y: any; targetSnapPointId: any; state: string};
+    nativeEvent: {
+      x: number;
+      y: number;
+      targetSnapPointId: number;
+      state: number;
+    };
   }) => any,
 ) {
   const dist = new Value(0);
-  const snap = (pt) => [
+  const snap = (pt: {
+    tension: Animated.Value<number>;
+    damping: Animated.Value<number>;
+    x: Animated.Value<number>;
+    y: Animated.Value<number>;
+  }) => [
     set(best.tension, pt.tension || DEFAULT_SNAP_TENSION),
     set(best.damping, pt.damping || DEFAULT_SNAP_DAMPING),
     set(best.x, pt.x || 0),
@@ -80,15 +98,15 @@ function snapTo(
     (clb || dragClb) &&
       call([best.x, best.y, target.x, target.y], ([bx, by, x, y]) => {
         snapPoints.forEach(
-          (pt: {x: undefined; y: undefined; id: any}, index: any) => {
+          (pt: { x: undefined; y: undefined; id: any }, index: any) => {
             if (
               (pt.x === undefined || pt.x === bx) &&
               (pt.y === undefined || pt.y === by)
             ) {
-              clb && clb({nativeEvent: {...pt, index}});
+              clb && clb({ nativeEvent: { ...pt, index } });
               dragClb &&
                 dragClb({
-                  nativeEvent: {x, y, targetSnapPointId: pt.id, state: 'end'},
+                  nativeEvent: { x, y, targetSnapPointId: pt.id, state: 'end' },
                 });
             }
           },
@@ -99,9 +117,9 @@ function snapTo(
 
 function springBehavior(
   dt: Animated.Adaptable<number>,
-  target: {x: any; y: any},
-  obj: {vx: any; vy: any; mass: any},
-  anchor: {x: Animated.Adaptable<number>; y: Animated.Adaptable<number>},
+  target: { x: any; y: any },
+  obj: { vx: any; vy: any; mass: any },
+  anchor: { x: Animated.Adaptable<number>; y: Animated.Adaptable<number> },
   tension = 300,
 ) {
   const dx = sub(target.x, anchor.x);
@@ -116,8 +134,8 @@ function springBehavior(
 
 function frictionBehavior(
   dt: Animated.Adaptable<number>,
-  _target: {x: Animated.Value<any>; y: Animated.Value<any>},
-  obj: {vx: any; vy: any; mass?: number},
+  _target: { x: Animated.Value<any>; y: Animated.Value<any> },
+  obj: { vx: any; vy: any; mass?: number },
   damping = 0.7,
 ) {
   const friction = pow(damping, multiply(60, dt));
@@ -129,9 +147,9 @@ function frictionBehavior(
 
 function anchorBehavior(
   dt: Animated.Adaptable<number>,
-  target: {x: any; y: any},
-  obj: {vx: any; vy: any; mass?: number},
-  anchor: {x: any; y: any},
+  target: { x: any; y: any },
+  obj: { vx: any; vy: any; mass?: number },
+  anchor: { x: any; y: any },
 ) {
   const dx = sub(anchor.x, target.x);
   const dy = sub(anchor.y, target.y);
@@ -143,9 +161,9 @@ function anchorBehavior(
 
 function gravityBehavior(
   dt: Animated.Adaptable<number>,
-  target: {x: any; y: any},
-  obj: {vx: any; vy: any; mass: any},
-  anchor: {x: Animated.Adaptable<number>; y: Animated.Adaptable<number>},
+  target: { x: any; y: any },
+  obj: { vx: any; vy: any; mass: any },
+  anchor: { x: Animated.Adaptable<number>; y: Animated.Adaptable<number> },
   strength = DEFAULT_GRAVITY_STRENGTH,
   falloff = DEFAULT_GRAVITY_FALLOF,
 ) {
@@ -225,13 +243,13 @@ class Interactable extends Component {
   static defaultProps = {
     dragToss: 0.1,
     dragEnabled: true,
-    initialPosition: {x: 0, y: 0},
+    initialPosition: { x: 0, y: 0 },
   };
 
   constructor(props) {
     super(props);
 
-    const gesture = {x: new Value(0), y: new Value(0)};
+    const gesture = { x: new Value(0), y: new Value(0) };
     const state = new Value(-1);
 
     this._onGestureEvent = event([
@@ -307,10 +325,10 @@ class Interactable extends Component {
       );
     };
 
-    const dragAnchor = {x: new Value(0), y: new Value(0)};
+    const dragAnchor = { x: new Value(0), y: new Value(0) };
     const dragBuckets = [[], [], []];
     if (props.dragWithSpring) {
-      const {tension, damping} = props.dragWithSpring;
+      const { tension, damping } = props.dragWithSpring;
       addSpring(dragAnchor, tension, null, dragBuckets);
       addFriction(damping, null, dragBuckets);
     } else {
@@ -320,7 +338,7 @@ class Interactable extends Component {
     const handleStartDrag =
       props.onDrag &&
       call([target.x, target.y], ([x, y]) =>
-        props.onDrag({nativeEvent: {x, y, state: 'start'}}),
+        props.onDrag({ nativeEvent: { x, y, state: 'start' } }),
       );
 
     const snapBuckets = [[], [], []];
@@ -410,7 +428,7 @@ class Interactable extends Component {
           ? cond(
               clockRunning(clock),
               call([target.x, target.y], ([x, y]) =>
-                props.onStop({nativeEvent: {x, y}}),
+                props.onStop({ nativeEvent: { x, y } }),
               ),
             )
           : undefined,
@@ -493,7 +511,7 @@ class Interactable extends Component {
   }
 
   render() {
-    const {children, style, horizontalOnly, verticalOnly} = this.props;
+    const { children, style, horizontalOnly, verticalOnly } = this.props;
     return (
       <PanGestureHandler
         maxPointers={1}
@@ -506,8 +524,8 @@ class Interactable extends Component {
             style,
             {
               transform: [
-                {translateX: verticalOnly ? 0 : this._transX},
-                {translateY: horizontalOnly ? 0 : this._transY},
+                { translateX: verticalOnly ? 0 : this._transX },
+                { translateY: horizontalOnly ? 0 : this._transY },
               ],
             },
           ]}>
@@ -518,7 +536,7 @@ class Interactable extends Component {
   }
 
   // imperative commands
-  setVelocity({x, y}) {
+  setVelocity({ x, y }) {
     if (x !== undefined) {
       this._dragging.x.setValue(1);
       this._velocity.x.setValue(x);
@@ -529,7 +547,7 @@ class Interactable extends Component {
     }
   }
 
-  snapTo({index}) {
+  snapTo({ index }) {
     const snapPoint = this.props.snapPoints[index];
     this._snapAnchor.tension.setValue(
       snapPoint.tension || DEFAULT_SNAP_TENSION,
@@ -540,10 +558,10 @@ class Interactable extends Component {
     this._snapAnchor.x.setValue(snapPoint.x || 0);
     this._snapAnchor.y.setValue(snapPoint.y || 0);
     this.props.onSnap &&
-      this.props.onSnap({nativeEvent: {...snapPoint, index}});
+      this.props.onSnap({ nativeEvent: { ...snapPoint, index } });
   }
 
-  changePosition({x, y}) {
+  changePosition({ x, y }) {
     if (x !== undefined) {
       this._dragging.x.setValue(1);
       this._position.x.setValue(x);

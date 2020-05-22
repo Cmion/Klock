@@ -13,8 +13,10 @@ import {
   CITY_FIND_BY_ID,
   CITY_FIND_ALL,
   CITY_GET_ALL,
+  HEADER_SEARCH_CLOSE,
+  CITY_UPDATE_BY_ID,
 } from '../../actions';
-import {arrayToById} from '../../../_shared/utils/Helpers';
+import { arrayToById } from '../../../_shared/utils/Helpers';
 
 const initialState = {
   database: {
@@ -36,13 +38,19 @@ const initialState = {
 export default (state = initialState, action: any) => {
   switch (action.type) {
     case CITY_COLLECTION:
-      return {...state, database: {...state.database, city: action?.payload}};
+      return {
+        ...state,
+        database: { ...state.database, city: action?.payload },
+      };
     case ZONE_COLLECTION:
-      return {...state, database: {...state.database, zone: action?.payload}};
+      return {
+        ...state,
+        database: { ...state.database, zone: action?.payload },
+      };
     case ZONE_INSERT_ONE:
     case ZONE_FIND_ONE:
     case ZONE_FIND_BY_ID:
-      return {...state, zone: {...state.zone, current: action?.payload}};
+      return { ...state, zone: { ...state.zone, current: action?.payload } };
     case ZONE_INSERT_MANY:
     case ZONE_FIND_ALL:
     case ZONE_GET_ALL:
@@ -57,7 +65,7 @@ export default (state = initialState, action: any) => {
     case CITY_INSERT_ONE:
     case CITY_FIND_BY_ID:
     case CITY_FIND_ONE:
-      return {...state, city: {...state.city, current: action?.payload}};
+      return { ...state, city: { ...state.city, current: action?.payload } };
 
     case CITY_INSERT_MANY:
     case CITY_FIND_ALL:
@@ -68,6 +76,27 @@ export default (state = initialState, action: any) => {
           ...state.city,
           byList: [...action?.payload],
           byId: arrayToById(action?.payload),
+        },
+      };
+    case HEADER_SEARCH_CLOSE.SUCCESS:
+      return {
+        ...state,
+        city: { ...state.city, current: null, byId: null, byList: [] },
+      };
+    case CITY_UPDATE_BY_ID:
+      return {
+        ...state,
+        city: {
+          ...state.city,
+          current: action?.payload,
+          byId: { ...state.city.byId, ...arrayToById([action?.payload]) },
+          byList: state.city.byList.map((value: any) => {
+            if (value._id === action?.payload?._id) {
+              return action?.payload;
+            } else {
+              return value;
+            }
+          }),
         },
       };
     default:

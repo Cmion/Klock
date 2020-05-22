@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const createActionType = (type = 'APP', entity = 'APP') => ({
   START: `@@KLOCK[${entity}] ${type.toUpperCase()}_START`,
   ERROR: `@@KLOCK[${entity}] ${type.toUpperCase()}_ERROR`,
@@ -33,7 +35,7 @@ export const objectId = (): string => {
 };
 export const arrayToById = (array: Array<{}>) => {
   return array.reduce((accumulator, currentObject) => {
-    const {_id} = currentObject;
+    const { _id } = currentObject;
     accumulator[_id] = currentObject;
     return accumulator;
   }, {});
@@ -41,37 +43,87 @@ export const arrayToById = (array: Array<{}>) => {
 
 export function debounce(
   callback: Function,
-  wait: number = 200,
+  effect?: Function,
+  wait: number = 250,
   immediate: boolean = false,
 ): Function {
   let timeout: any;
 
-  return function execute(): void {
+  return function executedFunction(...args: Array<any>) {
+    // eslint-disable-next-line consistent-this
     let context = this;
-    let args = arguments;
-    timeout = null;
 
-    // Timeout callback
-    const later = function (): void {
-      // reset timeout
+    let later = function () {
       timeout = null;
-      // invoke callback function if has not been called immediately
       if (!immediate) {
         callback.apply(context, args);
       }
     };
 
-    // determine whether to call func immediately
-    const callNow = immediate && !timeout;
+    let callNow = immediate && !timeout;
+    if (typeof effect === 'function') {
+      effect();
+    }
 
-    // clears timeout to prevent previous timeout from return results
     clearTimeout(timeout);
-    // set timeout
+
     timeout = setTimeout(later, wait);
 
-    // calls func if immediate is true
     if (callNow) {
       callback.apply(context, args);
     }
   };
 }
+export const parseOffset = (offset: string): string => {
+  return offset
+    ? offset.split('UTC')[1].includes(':')
+      ? offset.split('UTC')[1]
+      : offset.split('UTC')[1] + ':00'
+    : '+00:00';
+};
+
+export const monthsIndex = (monthName: string): number => {
+  const months = {
+    January: 0,
+    February: 1,
+    March: 2,
+    April: 3,
+    May: 4,
+    June: 5,
+    July: 6,
+    August: 7,
+    September: 8,
+    October: 9,
+    November: 10,
+    December: 11,
+  };
+  return months[capitalize(monthName)];
+};
+export const parseDST = (data: {
+  dst: [string, string, string];
+  utcOffset: string;
+  setter?: moment.Moment | Date;
+}) => {
+  const [start, end, dstOffset] = data.dst;
+  const setter = data?.setter;
+  const defaultDate =
+    setter && (moment.isMoment(setter) || moment.isDate(setter))
+      ? setter
+      : moment();
+  if (start === 'undefined' && end === 'undefined') {
+    return moment(defaultDate).utcOffset(parseOffset(data.utcOffset));
+  }
+
+  const year = moment().get('year');
+  const [startDay, startMonth] = start.split(' ');
+  const [endDay, endMonth] = end.split(' ');
+  // prettier-ignore
+  const startDate = moment([year, monthsIndex(startMonth), startDay, 0, 0, 0]);
+  const endDate = moment([year, monthsIndex(endMonth), endDay, 23, 59, 59]);
+  const isDST = moment().isBetween(startDate, endDate);
+  if (isDST) {
+    return moment(defaultDate).utcOffset(parseOffset(dstOffset));
+  }
+
+  return moment(defaultDate).utcOffset(parseOffset(dstOffset));
+};
