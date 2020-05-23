@@ -1,8 +1,9 @@
-import {Dimensions, StyleSheet, StatusBar} from 'react-native';
+import { Dimensions, StyleSheet, StatusBar } from 'react-native';
 import Color from '../../../_shared/utils/Color';
 import Font from '../../../_shared/utils/Font';
+import { TABBARHEIGHT } from './../../../_shared/utils/Constants';
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -15,6 +16,7 @@ export default StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: Color.BACKGROUND,
+    // marginBottom: TABBARHEIGHT,
   },
   text: {
     fontSize: 30,
@@ -67,9 +69,9 @@ export default StyleSheet.create({
     width: width,
     flex: 1,
     alignItems: 'center',
-    bottom: 90,
+    bottom: TABBARHEIGHT + 10,
   },
-  timezones: {paddingTop: 10},
+  timezones: { paddingTop: 10 },
   timezoneUi: {
     paddingHorizontal: 30,
     flexDirection: 'row',

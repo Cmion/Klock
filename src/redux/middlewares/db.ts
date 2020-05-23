@@ -6,8 +6,9 @@ import {
   FIND_BY_ID,
   FIND_ALL,
   GET_ALL,
+  UPDATE_BY_ID,
 } from '../actions';
-import {ObjectSchema, MigrationCallback} from 'realm';
+import { ObjectSchema, MigrationCallback } from 'realm';
 import {
   openDB,
   findAll,
@@ -16,7 +17,7 @@ import {
   insertMany,
   insertOne,
   sort,
-  // updateById,
+  updateById,
   // updateMany,
   // updateOne,
   // deleteAll,
@@ -26,9 +27,9 @@ import {
   getAll,
   DatabaseToConfig,
 } from '../../_shared/utils/RealmDB';
-import {Dispatch} from 'redux';
+import { Dispatch } from 'redux';
 
-const initialize = ({dispatch}: {dispatch: Dispatch}) => (
+const Initialize = ({ dispatch }: { dispatch: Dispatch }) => (
   next: Function,
 ) => (action: {
   type: string;
@@ -88,7 +89,7 @@ const initialize = ({dispatch}: {dispatch: Dispatch}) => (
   }
 };
 
-const Create = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
+const Create = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
   action: any,
 ) => {
   next(action);
@@ -96,10 +97,10 @@ const Create = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
   if (type === INSERT_ONE || type === INSERT_MANY) {
     const onSuccess: string = action?.meta?.onSuccess;
     const collection: string = action?.meta?.db;
-    const {path, schemaVersion, schema, migration} = DatabaseToConfig[
+    const { path, schemaVersion, schema, migration } = DatabaseToConfig[
       collection
     ];
-    const db: {database: Realm; name: string} = openDB(
+    const db: { database: Realm; name: string } = openDB(
       path,
       schema,
       schemaVersion,
@@ -147,7 +148,7 @@ const Create = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
   }
 };
 
-const Retrieve = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
+const Retrieve = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
   action: any,
 ) => {
   next(action);
@@ -164,11 +165,11 @@ const Retrieve = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
     const {
       param: sortParam,
       order: sortOrder,
-    }: {param: string; order: string} = action?.meta?.sort;
-    const {path, schemaVersion, schema, migration} = DatabaseToConfig[
+    }: { param: string; order: string } = action?.meta?.sort;
+    const { path, schemaVersion, schema, migration } = DatabaseToConfig[
       collection
     ];
-    const db: {database: Realm; name: string} = openDB(
+    const db: { database: Realm; name: string } = openDB(
       path,
       schema,
       schemaVersion,
@@ -225,4 +226,44 @@ const Retrieve = ({dispatch}: {dispatch: Dispatch}) => (next: Function) => (
   }
 };
 
-export default [initialize, Create, Retrieve];
+const Update = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
+  action: any,
+) => {
+  next(action);
+  const type: string = action?.type;
+  if (type === UPDATE_BY_ID) {
+    const onSuccess: string = action?.meta?.onSuccess;
+    const collection: string = action?.meta?.db;
+
+    const { path, schemaVersion, schema, migration } = DatabaseToConfig[
+      collection
+    ];
+    const db: { database: Realm; name: string } = openDB(
+      path,
+      schema,
+      schemaVersion,
+      migration,
+    );
+    const data = action?.payload;
+    const database = db?.database;
+
+    // Listen for changes
+    database.objects(db?.name).addListener((current: any, changes: any) => {
+      if (type === UPDATE_BY_ID) {
+        changes.modifications.forEach((index: number) => {
+          if (typeof onSuccess === 'string') {
+            dispatch({
+              type: onSuccess,
+              payload: current[index],
+            });
+          }
+        });
+      }
+    });
+    if (type === UPDATE_BY_ID) {
+      const id = action?.meta?.id;
+      updateById(db, id, { ...data, updatedAt: new Date().toString() });
+    }
+  }
+};
+export default [Initialize, Create, Retrieve, Update];

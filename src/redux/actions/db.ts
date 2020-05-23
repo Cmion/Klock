@@ -2,7 +2,7 @@ import {
   createActionString,
   createActionType,
 } from '../../_shared/utils/Helpers';
-import {ObjectSchema, MigrationCallback} from 'realm';
+import { ObjectSchema, MigrationCallback } from 'realm';
 
 const entity = 'DATABASE';
 export const USE_DB = createActionType('USE_DB', entity);
@@ -98,7 +98,7 @@ export const findById = ({
   db: string;
   id: string | number;
   onSuccess: string;
-  sort: {param: string; order: string};
+  sort: { param: string; order: string };
 }) => ({
   type: FIND_BY_ID,
   meta: {
@@ -117,7 +117,7 @@ export const findAll = ({
   db: string;
   queryString: string;
   onSuccess: string;
-  sort: {param: string; order: string};
+  sort: { param: string; order: string };
 }) => ({
   type: FIND_ALL,
   meta: {
@@ -136,7 +136,7 @@ export const findOne = ({
   db: string;
   queryString: string;
   onSuccess: string;
-  sort: {param: string; order: string};
+  sort: { param: string; order: string };
 }) => ({
   type: FIND_ONE,
   meta: {
@@ -153,7 +153,7 @@ export const getAll = ({
 }: {
   db: string;
   onSuccess: string;
-  sort: {param: string; order: string};
+  sort: { param: string; order: string };
   sortParam: string;
 }) => ({
   type: GET_ALL,
@@ -196,12 +196,17 @@ export const insertOne = ({
   payload: data,
 });
 
-export const updateOne = (
-  db: string,
-  queryString: string,
-  data: object,
-  onSuccess: string,
-) => ({
+export const updateOne = ({
+  db,
+  queryString,
+  data,
+  onSuccess,
+}: {
+  db: string;
+  queryString: string;
+  data: object;
+  onSuccess: string;
+}) => ({
   type: UPDATE_ONE,
   payload: data,
   meta: {
@@ -210,12 +215,17 @@ export const updateOne = (
     onSuccess,
   },
 });
-export const updateMany = (
-  db: string,
-  queryString: string,
-  data: object,
-  onSuccess: string,
-) => ({
+export const updateMany = ({
+  db,
+  queryString,
+  data,
+  onSuccess,
+}: {
+  db: string;
+  queryString: string;
+  data: object;
+  onSuccess: string;
+}) => ({
   type: UPDATE_MANY,
   payload: data,
   meta: {
@@ -225,12 +235,17 @@ export const updateMany = (
   },
 });
 
-export const updateById = (
-  db: string,
-  id: string | number,
-  data: object,
-  onSuccess: string,
-) => ({
+export const updateById = ({
+  db,
+  id,
+  data,
+  onSuccess,
+}: {
+  db: string;
+  id: string;
+  data: object;
+  onSuccess: string;
+}) => ({
   type: UPDATE_BY_ID,
   payload: data,
   meta: {

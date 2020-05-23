@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Color from '../../../_shared/utils/Color';
-import {TABBARHEIGHT} from '../../../_shared/utils/Constants';
+import { TABBARHEIGHT } from '../../../_shared/utils/Constants';
 export default StyleSheet.create({
   container: {
     backgroundColor: 'transparent',
@@ -9,6 +9,7 @@ export default StyleSheet.create({
     bottom: 0,
     right: 0,
     alignItems: 'center',
+    height: TABBARHEIGHT,
   },
   tabContainer: {
     height: TABBARHEIGHT - 10,
@@ -30,12 +31,17 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
+  indList: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
   tabIndicatorContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-
     position: 'absolute',
     bottom: 0,
+    // justifyContent: 'center',
   },
   indicator: {
     height: 6,

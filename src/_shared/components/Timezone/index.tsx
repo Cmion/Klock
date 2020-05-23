@@ -1,155 +1,127 @@
-import React, {useState, useEffect, useRef} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  TouchableOpacity,
-  FlatList,
-} from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, FlatList } from 'react-native';
 import Color from '../../utils/Color';
-import Switch from '../Partials/Switch';
-import Checkbox from '../Partials/Checkbox';
-import Font from '../../utils/Font';
-import {connect} from 'react-redux';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { connect } from 'react-redux';
+import { debounce } from '../../utils';
+import {
+  CITY_FIND_ALL,
+  findAll,
+  getHeaderSearchValue,
+  updateById,
+  headerSearchClose,
+} from '../../../redux/actions';
+import { Collection } from '../../utils/Constants';
+import { Cities } from './../../utils/Types.d';
+import Timer from '../../components/Partials/Timer';
+import Loader from './../Partials/Loader/index';
+import EmptyListRenderer from './partials/EmptyListRenderer';
+import ListItemRenderer from './partials/ListItemRenderer';
+import styles from './styles';
 
-import {getAll, insertOne, sort, prettify} from '../../utils/RealmDB';
-
-import moment from 'moment';
-
-const {height, width} = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height,
-    backgroundColor: Color.BACKGROUND,
-    // paddingTop: 40,
-  },
-});
-
-class TimezoneList extends React.PureComponent {
-  render() {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          // marginVertical: 55 / 2,
-          paddingHorizontal: 30,
-          width: width - 20,
-          height: 85,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-
-            // marginHorizontal: 20,
-          }}>
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              // paddingRight: 20,
-            }}></View>
-          <Text
-            style={{
-              color: Color.TEXTPRIMARY,
-              fontSize: 16,
-              fontFamily: Font.NORMAL,
-            }}>
-            Washington D.C
-          </Text>
-        </View>
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              color: Color.TEXTSECONDARY,
-              fontFamily: Font.NORMAL,
-              fontSize: 15,
-            }}>
-            {moment().format('LT')}
-          </Text>
-        </View>
-      </View>
-    );
-  }
+interface TimezoneProps {
+  cities: Array<Cities>;
+  currentCity: Cities;
+  searchValue: string;
+  findAll: Function;
+  searchTouched: boolean;
+  getHeaderSearchValue: Function;
+  updateById: Function;
+  headerSearchClose: Function;
 }
-const Timezone = ({navigation, route, searchValue, timezoneDB}) => {
-  const sectionRef = useRef();
-  useEffect(() => {
-    console.log(prettify(getAll(timezoneDB)));
-  }, []);
+const Timezone = ({
+  cities,
+  currentCity,
+  searchValue,
+  // eslint-disable-next-line no-shadow
+  findAll,
+  searchTouched,
+  // eslint-disable-next-line no-shadow
+  getHeaderSearchValue,
+  // eslint-disable-next-line no-shadow
+  updateById,
+  // eslint-disable-next-line no-shadow
+  headerSearchClose,
+}: TimezoneProps) => {
+  const [time, setTime] = useState({});
+  const [isTyping, setIsTyping] = useState(false);
 
-  // console.log(itemsLayout);
-  const DATA = Array(0)
-    .fill(0)
-    .map((_, i) => ({
-      title: String.fromCharCode(65 + i),
-      data: Array(10).fill('Lagos'),
-    }));
-  const alpha = Array(26)
-    .fill(0)
-    .map((_, i) => String.fromCharCode(65 + i));
+  const search = useMemo(
+    () =>
+      debounce(
+        (text: string) => {
+          findAll({
+            onSuccess: CITY_FIND_ALL,
+            db: Collection.CITY,
+            queryString: `city BEGINSWITH[c] "${text || null}"`,
+            sort: {
+              param: 'city',
+              order: 'desc',
+            },
+          });
+          setIsTyping(false);
+        },
+        () => {
+          setIsTyping(true);
+        },
+        250,
+        false,
+      ),
+    [findAll],
+  );
+  useEffect(() => {
+    return () => {
+      getHeaderSearchValue({ value: '', touched: false });
+    };
+  }, [getHeaderSearchValue]);
+  useEffect(() => {
+    if (searchTouched) {
+      search(searchValue);
+    }
+  }, [searchValue, search, searchTouched]);
+
   return (
-    <View
-      style={[
-        styles.container,
-        {flexDirection: 'row', justifyContent: 'space-between'},
-      ]}>
-      <FlatList
-        data={DATA}
-        keyExtractor={(item, index) => item + index}
-        renderItem={({item}) => <TimezoneList title={item} />}
-        style={{paddingTop: 20}}
-        ListEmptyComponent={() => (
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginVertical: 50,
-            }}>
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Icon
-                name={'search'}
-                color={Color.TEXTSECONDARY}
-                size={100}
-                style={{
-                  paddingVertical: 20,
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontFamily: Font.NORMAL,
-                  color: Color.TEXTPRIMARY,
-                }}>
-                Search for a City
-              </Text>
-            </View>
-          </View>
-        )}
-      />
-    </View>
+    <>
+      <Timer watchUnit={'minutes'} onTimeChange={(e: object) => setTime(e)} />
+      <View style={[styles.container]}>
+        <FlatList
+          data={cities}
+          extraData={currentCity}
+          keyExtractor={(item: Cities) => item._id.toString()}
+          contentContainerStyle={styles.flatListContainer}
+          renderItem={({ item }: { item: Cities }) => (
+            <ListItemRenderer
+              item={item}
+              time={time}
+              updateById={updateById}
+              getHeaderSearchValue={getHeaderSearchValue}
+              headerSearchClose={headerSearchClose}
+            />
+          )}
+          ListEmptyComponent={() => {
+            return isTyping ? (
+              <View style={styles.loaderContainer}>
+                <Loader loading={isTyping} color={Color.TEXTPRIMARY} />
+              </View>
+            ) : (
+              <EmptyListRenderer />
+            );
+          }}
+        />
+      </View>
+    </>
   );
 };
 
-const stateToProps = (state) => ({
+const stateToProps = (state: any) => ({
   searchValue: state?.ui?.header?.search?.value,
-  timezoneDB: state?.db?.Timezones,
+  searchTouched: state?.ui?.header?.search?.touched,
+  cities: state?.timezone?.city.byList,
+  currentCity: state?.timezone?.city?.current,
 });
-const dispatchToProps = {};
+const dispatchToProps = {
+  findAll,
+  getHeaderSearchValue,
+  updateById,
+  headerSearchClose,
+};
 export default connect(stateToProps, dispatchToProps)(Timezone);
