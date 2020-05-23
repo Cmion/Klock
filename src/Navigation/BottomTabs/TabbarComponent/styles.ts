@@ -16,7 +16,7 @@ export default StyleSheet.create({
     borderRadius: 60,
     backgroundColor: Color.DARK,
     // paddingHorizontal: 30,
-    marginBottom: 10,
+    marginBottom: 5,
     justifyContent: 'center',
     padding: 0,
     position: 'relative',
@@ -44,7 +44,7 @@ export default StyleSheet.create({
     // justifyContent: 'center',
   },
   indicator: {
-    height: 6,
+    height: 5,
     borderRadius: 3,
   },
 });

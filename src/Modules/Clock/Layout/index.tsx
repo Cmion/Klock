@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, Dimensions, ScrollView } from 'react-native';
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import Color from '../../../_shared/utils/Color';
 import { CLOCKSIZE } from '../../../_shared/utils/Constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -7,146 +7,60 @@ import Button from '../../../_shared/components/Partials/Button';
 import ClockUI from '../../../_shared/components/ClockUI';
 import moment from 'moment';
 import styles from './styles';
-import Animated from 'react-native-reanimated';
-import { TABBARHEIGHT } from './../../../_shared/utils/Constants';
+import * as Localize from 'react-native-localize';
+
+import {
+  parseDST,
+  timeDifferenceInWords,
+  TABBARHEIGHT,
+  Collection,
+  getZoneName,
+  debounce,
+} from '../../../_shared/utils';
+import { Cities } from '../../../_shared/utils/Types';
+import { connect } from 'react-redux';
+import {
+  findAll,
+  CITY_FIND_ALL_SELECTED,
+  cityReset,
+} from '../../../redux/actions';
+import { useNavigation } from '@react-navigation/native';
 
 interface LayoutProps {
-  route: object;
-  navigation: {
-    navigate: Function;
-  };
+  findAll: Function;
+  cities: Array<Cities>;
 }
-const timezones = [
-  {
-    city: 'New York',
-    code: 'US',
-    country: 'United States of America',
-    offsets: { inMinutes: -5 * 60 },
-  },
-  {
-    city: 'Algiers',
-    code: 'DZ',
-    country: 'Algeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'Almaty',
-    code: 'KZ',
-    country: 'Kazakhstan',
-    offsets: { inMinutes: 6 * 60 },
-  },
-  {
-    city: 'Amman',
-    code: 'JO',
-    country: 'Jordan',
-    offsets: { inMinutes: 2 * 60 },
-  },
-  {
-    city: 'Lagos',
-    code: 'NG',
-    country: 'Nigeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'Abu Dhabi',
-    code: 'UAE',
-    country: 'United Arab Emirates',
-    offsets: { inMinutes: 3 * 60 },
-  },
-  {
-    city: 'Canberra',
-    code: 'AUS',
-    country: 'Australia',
-    offsets: { inMinutes: 10 * 60 },
-  },
-  {
-    city: 'Paris',
-    code: 'Fr',
-    country: 'France',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'New Chuch',
-    code: 'NZ',
-    country: 'New Zeland',
-    offsets: { inMinutes: 9 * 60 },
-  },
-  {
-    city: 'Los Angeles',
-    code: 'US',
-    country: 'United States of America',
-    offsets: { inMinutes: -8 * 60 },
-  },
-  {
-    city: 'Hong-Kong',
-    code: 'PRC',
-    country: 'China',
-    offsets: { inMinutes: 7 * 60 },
-  },
-  {
-    city: 'New York',
-    code: 'US',
-    country: 'United States of America',
-    offsets: { inMinutes: -5 * 60 },
-  },
-  {
-    city: 'Algiers',
-    code: 'DZ',
-    country: 'Algeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'Almaty',
-    code: 'KZ',
-    country: 'Kazakhstan',
-    offsets: { inMinutes: 6 * 60 },
-  },
-  {
-    city: 'Amman',
-    code: 'JO',
-    country: 'Jordan',
-    offsets: { inMinutes: 2 * 60 },
-  },
-  {
-    city: 'Lagos',
-    code: 'NG',
-    country: 'Nigeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'New York',
-    code: 'US',
-    country: 'United States of America',
-    offsets: { inMinutes: -5 * 60 },
-  },
-  {
-    city: 'Algiers',
-    code: 'DZ',
-    country: 'Algeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-  {
-    city: 'Almaty',
-    code: 'KZ',
-    country: 'Kazakhstan',
-    offsets: { inMinutes: 6 * 60 },
-  },
-  {
-    city: 'Amman',
-    code: 'JO',
-    country: 'Jordan',
-    offsets: { inMinutes: 2 * 60 },
-  },
-  {
-    city: 'Lagos',
-    code: 'NG',
-    country: 'Nigeria',
-    offsets: { inMinutes: 1 * 60 },
-  },
-];
+
 //TODO: Make Current Date Sticky.
-export default ({ navigation }: LayoutProps) => {
+// eslint-disable-next-line no-shadow
+const Layout = ({ findAll, cities }: LayoutProps) => {
   const [time, setTime] = useState({});
+  const [timezoneName, setTimezoneName] = useState(getZoneName());
+  const { navigate, addListener } = useNavigation();
+
+  const setTimezoneNameDebounced = useMemo(
+    () => debounce(() => setTimezoneName(getZoneName())),
+    [],
+  );
+  useEffect(() => {
+    const unsubscribe = addListener('focus', () => {
+      findAll({
+        db: Collection.CITY,
+        onSuccess: CITY_FIND_ALL_SELECTED,
+        queryString: 'isSelected = true',
+        sort: { order: 'desc', param: 'updatedAt' },
+      });
+    });
+
+    Localize.addEventListener('change', () => {
+      setTimezoneName(getZoneName());
+    });
+
+    return unsubscribe;
+  }, [findAll, addListener, setTimezoneNameDebounced]);
+
+  const zoneAbbr = timezoneName.zoneAbbr;
+  const zoneName = timezoneName.zoneName;
 
   //TODO: Check scaling and tranformation values on different screens as it depends on screen width|height
   return (
@@ -172,29 +86,46 @@ export default ({ navigation }: LayoutProps) => {
               watchUnit={'minutes'}
             />
           </View>
-          <View>
-            <View style={styles.currentDateAndAlarm}>
-              <Text style={[styles.currentDate]}>
-                {moment()
-                  .set({ ...time })
-                  .format('ddd DD, MMMM')}{' '}
+
+          <View style={styles.currentDateAndAlarm}>
+            <Text style={[styles.currentDate]}>
+              {moment()
+                .set({ ...time })
+                .format('ddd, MMMM DD')}{' '}
+            </Text>
+            <View style={styles.zoneName}>
+              <Text style={[styles.zoneNameText]}>
+                {zoneName} ({zoneAbbr})
               </Text>
             </View>
           </View>
+
           <View style={styles.timezones}>
-            {timezones.map(({ city, code, offsets }, key, array) => {
-              const cTime = moment.utc().add(offsets.inMinutes, 'minutes');
+            {cities.map((item: Cities, key: number, array: Array<Cities>) => {
+              const { city_short, utcOffset, dst } = item;
+              const cityTimeToLocal = parseDST({
+                dst,
+                utcOffset,
+                setter: moment({ ...time }),
+                keepLocalTime: true,
+              });
+              const cityTime = parseDST({
+                dst,
+                utcOffset,
+                setter: moment({ ...time }),
+                keepLocalTime: false,
+              });
               return (
                 <View key={key}>
                   <View style={styles.timezoneUi}>
                     <View style={styles.tzLeft}>
-                      <Text style={styles.tzName}>{`${city}, ${code}`}</Text>
+                      <Text style={styles.tzName}>{`${city_short}`}</Text>
                       <Text style={styles.tzDate}>
-                        {cTime.format('ddd, MMMM Do')}
+                        {timeDifferenceInWords(cityTimeToLocal, moment())}
                       </Text>
                     </View>
                     <View style={styles.tzRight}>
-                      <Text style={styles.tzTime}>{cTime.format('LT')}</Text>
+                      <Text style={styles.tzTime}>{cityTime.format('LT')}</Text>
                     </View>
                   </View>
                   {key < array.length - 1 && <View style={styles.divider} />}
@@ -210,15 +141,24 @@ export default ({ navigation }: LayoutProps) => {
           icon={() => (
             <Icon name={'language'} size={30} color={Color.BACKGROUND} />
           )}
-          height={55}
+          height={50}
           title={''}
-          width={55}
-          borderRadius={55}
+          width={50}
+          borderRadius={50}
           onPress={() => {
-            navigation.navigate('Timezone');
+            navigate('Timezone');
           }}
         />
       </View>
     </View>
   );
 };
+
+const stateToProps = (state: any) => ({
+  cities: state?.timezone?.city?.selected?.byList,
+});
+const dispatchToProps = {
+  findAll,
+  cityReset,
+};
+export default connect(stateToProps, dispatchToProps)(Layout);

@@ -13,14 +13,15 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
   },
   renderContainer: {
-    marginHorizontal: 30,
+    // marginHorizontal: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     height: 60,
   },
   renderMainContainer: {
-    width: (width - 60) * 0.7,
+    width: (width - 40) * 0.7,
+    paddingLeft: 20,
   },
   cityText: {
     color: Color.TEXTPRIMARY,
@@ -31,6 +32,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    paddingRight: 20,
   },
   check: {
     justifyContent: 'center',

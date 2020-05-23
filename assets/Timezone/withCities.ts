@@ -5397,8 +5397,8 @@ export default [
     city_short: 'Windhoek',
     country: 'Namibia',
     country_code: 'NA',
-    utcOffset: 'UTC+01',
-    dst: ['undefined', 'undefined', 'UTC+01'],
+    utcOffset: 'UTC+02',
+    dst: ['undefined', 'undefined', 'UTC+03'],
   },
   {
     city: 'Ballarat, Australia',

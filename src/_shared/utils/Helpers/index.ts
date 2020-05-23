@@ -1,5 +1,5 @@
 import moment from 'moment';
-
+import { TimezoneAbbreviation } from './../Defs/index';
 export const createActionType = (type = 'APP', entity = 'APP') => ({
   START: `@@KLOCK[${entity}] ${type.toUpperCase()}_START`,
   ERROR: `@@KLOCK[${entity}] ${type.toUpperCase()}_ERROR`,
@@ -103,6 +103,7 @@ export const parseDST = (data: {
   dst: [string, string, string];
   utcOffset: string;
   setter?: moment.Moment | Date;
+  keepLocalTime?: boolean;
 }) => {
   const [start, end, dstOffset] = data.dst;
   const setter = data?.setter;
@@ -111,7 +112,10 @@ export const parseDST = (data: {
       ? setter
       : moment();
   if (start === 'undefined' && end === 'undefined') {
-    return moment(defaultDate).utcOffset(parseOffset(data.utcOffset));
+    return moment(defaultDate).utcOffset(
+      parseOffset(data.utcOffset),
+      data.keepLocalTime || false,
+    );
   }
 
   const year = moment().get('year');
@@ -122,8 +126,47 @@ export const parseDST = (data: {
   const endDate = moment([year, monthsIndex(endMonth), endDay, 23, 59, 59]);
   const isDST = moment().isBetween(startDate, endDate);
   if (isDST) {
-    return moment(defaultDate).utcOffset(parseOffset(dstOffset));
+    return moment(defaultDate).utcOffset(
+      parseOffset(dstOffset),
+      data.keepLocalTime || false,
+    );
   }
 
-  return moment(defaultDate).utcOffset(parseOffset(dstOffset));
+  return moment(defaultDate).utcOffset(
+    parseOffset(dstOffset),
+    data.keepLocalTime || false,
+  );
+};
+
+export const timeDifferenceInWords = (
+  start: moment.Moment,
+  end: moment.Moment,
+): string => {
+  const diff = start.utcOffset() - end.utcOffset();
+
+  const tomorrow = end.isBefore(start, 'day');
+  const yesterday = start.isAfter(end, 'day');
+
+  if (diff < 0) {
+    const min = Math.abs(Math.round(diff % 60));
+    const hr = Math.abs(Math.floor(diff / 60));
+    return `${yesterday ? 'Yesterday,' : 'Today,'} ${hr} ${
+      min > 0 || yesterday ? 'hr' : hr > 1 ? 'hours' : 'hour'
+    }${min > 0 ? ` ${min} min` : ''} behind`;
+  }
+
+  const min = Math.abs(diff % 60);
+  const hr = Math.abs(Math.floor(diff / 60));
+
+  return hr > 0
+    ? `${tomorrow ? 'Tomorrow,' : 'Today,'} ${hr} ${
+        min > 0 ? 'hr' : hr > 1 ? 'hours' : 'hour'
+      }${min > 0 || tomorrow ? ` ${min} min` : ''} ahead`
+    : 'Today, same time';
+};
+
+export const getZoneName = () => {
+  const dateString = new Date().toString();
+  const zoneAbbr = dateString.split(' ')[6].split(/\(|\)/).join('');
+  return { zoneAbbr: zoneAbbr, zoneName: TimezoneAbbreviation[zoneAbbr] };
 };
