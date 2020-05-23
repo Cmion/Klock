@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  Platform,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+} from 'react-native';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../../styles';
@@ -10,7 +17,8 @@ import Checkbox from './../../../Partials/Checkbox/index';
 import { parseDST } from './../../../../utils/Helpers/index';
 
 const { width } = Dimensions.get('window');
-
+const TouchableView =
+  Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 const ListItemRenderer = ({
   item,
   time,
@@ -39,32 +47,41 @@ const ListItemRenderer = ({
   };
 
   return (
-    <TouchableOpacity
+    <TouchableView
       activeOpacity={0.95}
       accessibilityRole={'button'}
       accessibilityLabel={'World Clock City Button'}
       onPress={selectCity}
-      style={[styles.renderContainer, { width: width - 60 }]}>
-      <View style={styles.renderMainContainer}>
-        <Text style={styles.cityText}>{item.city}</Text>
-      </View>
-      <View style={[styles.timeContainer, { width: (width - 60) * 0.3 }]}>
-        <View style={styles.check}>
-          {item.isSelected ? (
-            <Checkbox size={27} checked={item.isSelected} useBordered />
-          ) : null}
+      style={[{ width: width - 40 }]}>
+      <View
+        style={[
+          styles.renderContainer,
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+          },
+        ]}>
+        <View style={styles.renderMainContainer}>
+          <Text style={styles.cityText}>{item.city}</Text>
         </View>
-        <View>
-          <Text style={styles.timeText}>
-            {parseDST({
-              dst: item.dst,
-              utcOffset: item.utcOffset,
-              setter: moment({ ...time }),
-            }).format('LT')}
-          </Text>
+        <View style={[styles.timeContainer, { width: (width - 40) * 0.3 }]}>
+          <View style={styles.check}>
+            {item.isSelected ? (
+              <Checkbox size={27} checked={item.isSelected} useBordered />
+            ) : null}
+          </View>
+          <View>
+            <Text style={styles.timeText}>
+              {parseDST({
+                dst: item.dst,
+                utcOffset: item.utcOffset,
+                setter: moment({ ...time }),
+              }).format('LT')}
+            </Text>
+          </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </TouchableView>
   );
 };
 

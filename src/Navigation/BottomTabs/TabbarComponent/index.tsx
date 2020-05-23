@@ -54,7 +54,7 @@ const TabbarComponent = (
                       prev: iconsLayout.current.cur,
                     };
                   }}>
-                  <Icon name={icon} size={35} color={Color.PRIMARY} />
+                  <Icon name={icon} size={30} color={Color.PRIMARY} />
                 </TouchableOpacity>
               );
             },

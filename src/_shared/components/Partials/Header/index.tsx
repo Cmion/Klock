@@ -61,7 +61,7 @@ const Header = (props: HeaderProps) => {
   const searchValue = props?.header?.search?.value;
   const headerSearchClose = props?.headerSearchClose;
   const searchOn = props?.searchOn || false;
-
+  console.log(navigation);
   const [searchOpen, setSearchOpen] = useState(searchOn);
   // const [modalOpen, setModalOpen] = useState(false);
 

@@ -21,8 +21,8 @@ const RootStack = () => (
         component: Timezone,
         screenOptions: {
           options: {
-            headerStyle: {backgroundColor: 'transparent'},
-            header: (props) => {
+            headerStyle: { backgroundColor: 'transparent' },
+            header: (props: any) => {
               const useElevation = props?.scene?.route?.params?.useElevation;
               return (
                 <Header

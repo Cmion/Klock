@@ -30,7 +30,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 30,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     alignItems: 'center',
@@ -54,9 +54,21 @@ export default StyleSheet.create({
   currentDateAndAlarm: {
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'row',
+    // flexDirection: 'row',
     width,
     paddingTop: 10,
+    paddingBottom: 20,
+  },
+  zoneName: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+  },
+  zoneNameText: {
+    fontSize: 16,
+    fontFamily: Font.MEDIUM,
+    color: Color.TEXTSECONDARY80,
+    // textTransform: 'capitalize',
   },
   currentDate: {
     fontSize: 20,
@@ -73,7 +85,7 @@ export default StyleSheet.create({
   },
   timezones: { paddingTop: 10 },
   timezoneUi: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -87,7 +99,7 @@ export default StyleSheet.create({
     paddingBottom: 20,
   },
   tzDate: {
-    color: Color.TEXTSECONDARY,
+    color: Color.TEXTSECONDARY70,
     fontFamily: Font.NORMAL,
     fontSize: 14,
   },

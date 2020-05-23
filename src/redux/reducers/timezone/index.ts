@@ -12,9 +12,11 @@ import {
   CITY_FIND_ONE,
   CITY_FIND_BY_ID,
   CITY_FIND_ALL,
+  CITY_FIND_ALL_SELECTED,
   CITY_GET_ALL,
   HEADER_SEARCH_CLOSE,
   CITY_UPDATE_BY_ID,
+  CITY_RESET,
 } from '../../actions';
 import { arrayToById } from '../../../_shared/utils/Helpers';
 
@@ -32,6 +34,10 @@ const initialState = {
     byList: [],
     byId: {},
     current: null,
+    selected: {
+      byList: [],
+      current: null,
+    },
   },
 };
 
@@ -78,7 +84,19 @@ export default (state = initialState, action: any) => {
           byId: arrayToById(action?.payload),
         },
       };
+    case CITY_FIND_ALL_SELECTED:
+      return {
+        ...state,
+        city: {
+          ...state.city,
+          selected: {
+            byList: [...action?.payload],
+            current: null,
+          },
+        },
+      };
     case HEADER_SEARCH_CLOSE.SUCCESS:
+    case CITY_RESET:
       return {
         ...state,
         city: { ...state.city, current: null, byId: null, byList: [] },
@@ -89,6 +107,11 @@ export default (state = initialState, action: any) => {
         city: {
           ...state.city,
           current: action?.payload,
+          selected: {
+            ...state.city.selected,
+            current: action.payload,
+            byList: [...state.city.selected.byList, action.payload],
+          },
           byId: { ...state.city.byId, ...arrayToById([action?.payload]) },
           byList: state.city.byList.map((value: any) => {
             if (value._id === action?.payload?._id) {

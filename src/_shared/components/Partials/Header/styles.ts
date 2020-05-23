@@ -1,4 +1,4 @@
-import {StyleSheet, StatusBar} from 'react-native';
+import { StyleSheet, StatusBar } from 'react-native';
 import Color from '../../../utils/Color';
 import Font from '../../../utils/Font';
 
@@ -10,7 +10,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingTop: (StatusBar.currentHeight || 20) + 20,
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     backgroundColor: Color.BACKGROUND,
   },
   headerTitle: {
@@ -47,5 +47,5 @@ export default StyleSheet.create({
     height: 30,
     padding: 2,
   },
-  padLeft: {paddingLeft: 10},
+  padLeft: { paddingLeft: 10 },
 });
