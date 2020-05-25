@@ -9,14 +9,12 @@ export default StyleSheet.create({
     flex: 1,
     display: 'flex',
     backgroundColor: Color.BACKGROUND,
-    // marginTop: StatusBar.currentHeight,
   },
   scrollView: {
     height,
     left: 0,
     right: 0,
     backgroundColor: Color.BACKGROUND,
-    // marginBottom: TABBARHEIGHT,
   },
   text: {
     fontSize: 30,
@@ -71,7 +69,7 @@ export default StyleSheet.create({
     // textTransform: 'capitalize',
   },
   currentDate: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: Font.MEDIUM,
     color: Color.TEXTPRIMARY,
     textTransform: 'uppercase',

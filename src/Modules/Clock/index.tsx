@@ -1,5 +1,5 @@
 import React from 'react';
-import {StatusBar, Dimensions} from 'react-native';
+import { StatusBar, Dimensions } from 'react-native';
 import CreateStackNav from '../../_shared/components/CreateStackNav';
 import CreateDrawerNav from '../../_shared/components/CreateDrawerNav';
 import Layout from './Layout';
@@ -7,7 +7,7 @@ import Color from '../../_shared/utils/Color';
 import Timezone from '../../_shared/components/Timezone';
 import Header from '../../_shared/components/Partials/Header';
 
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const Drawer = () => (
   <CreateDrawerNav
     config={[
@@ -38,13 +38,14 @@ const Clock = () => {
             component: Drawer,
             screenOptions: {
               options: {
-                headerStyle: {backgroundColor: 'transparent'},
-                header: ({routes, navigation}) => {
+                headerStyle: { backgroundColor: 'transparent' },
+                header: ({ route, navigation }) => {
                   return (
                     <Header
                       useDrawerMenu
                       routeName={'Clock'}
                       navigation={navigation}
+                      route={route}
                     />
                   );
                 },
