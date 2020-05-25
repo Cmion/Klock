@@ -2,6 +2,7 @@
 export default {
   BACKGROUND: 'rgba(27, 33, 45, 1)',
   TEXTPRIMARY: 'rgba(255, 255, 255, 1)',
+  HEADERICON: 'rgba(255, 255, 255, 1)',
   TEXTSECONDARY40: 'rgba(255, 255, 255, 0.40)',
   TEXTSECONDARY45: 'rgba(255, 255, 255, 0.45)',
   TEXTSECONDARY: 'rgba(255, 255, 255, 0.50)',

@@ -8,6 +8,8 @@ import Animated, { Easing } from 'react-native-reanimated';
 import { runTiming } from '../../../_shared/utils';
 import styles from './styles';
 
+//TODO: Make Tabbar component height responsive
+//TODO: Make Tabbar indicator work correctly with back button
 const TabbarComponent = (
   props: Partial<{ state: object | any; navigation: object | any }>,
 ) => {

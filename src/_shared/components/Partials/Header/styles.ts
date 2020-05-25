@@ -9,7 +9,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: (StatusBar.currentHeight || 20) + 20,
+    paddingTop: (StatusBar.currentHeight || 20) + 15,
     paddingHorizontal: 20,
     backgroundColor: Color.BACKGROUND,
   },
@@ -25,6 +25,10 @@ export default StyleSheet.create({
   menu: {
     alignItems: 'center',
     justifyContent: 'center',
+    height: 35,
+    width: 35,
+    borderRadius: 35,
+
     // paddingRight: 20
   },
   horizontalCenter: {
@@ -32,8 +36,10 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerLeft: {
+    justifyContent: 'space-between',
+  },
   backBtn: {
-    paddingRight: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
