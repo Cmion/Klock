@@ -83,21 +83,22 @@ export const parseOffset = (offset: string): string => {
 };
 
 export const monthsIndex = (monthName: string): number => {
-  const months = {
-    January: 0,
-    February: 1,
-    March: 2,
-    April: 3,
-    May: 4,
-    June: 5,
-    July: 6,
-    August: 7,
-    September: 8,
-    October: 9,
-    November: 10,
-    December: 11,
-  };
-  return months[capitalize(monthName)];
+  enum Months {
+    January,
+    February,
+    March,
+    April,
+    May,
+    June,
+    July,
+    August,
+    September,
+    October,
+    November,
+    December,
+  }
+  const capitalizedMonthName: string = capitalize(monthName);
+  return Months[`${capitalizedMonthName}`];
 };
 export const parseDST = (data: {
   dst: [string, string, string];
@@ -138,14 +139,44 @@ export const parseDST = (data: {
   );
 };
 
+const isYesterday = (today: moment.Moment, another: moment.Moment) => {
+  const msInADay = 24 * 60 * 60 * 1000;
+  const valueOfToday =
+    moment([
+      today.get('year'),
+      today.get('month'),
+      today.get('date'),
+    ]).valueOf() - msInADay;
+  const valueOfAnother = moment([
+    another.get('year'),
+    another.get('month'),
+    another.get('date'),
+  ]).valueOf();
+  return valueOfToday === valueOfAnother;
+};
+const isTomorrow = (today: moment.Moment, another: moment.Moment) => {
+  const msInADay = 24 * 60 * 60 * 1000;
+  const valueOfToday =
+    moment([
+      today.get('year'),
+      today.get('month'),
+      today.get('date'),
+    ]).valueOf() + msInADay;
+  const valueOfAnother = moment([
+    another.get('year'),
+    another.get('month'),
+    another.get('date'),
+  ]).valueOf();
+  return valueOfToday === valueOfAnother;
+};
 export const timeDifferenceInWords = (
   start: moment.Moment,
   end: moment.Moment,
 ): string => {
   const diff = start.utcOffset() - end.utcOffset();
 
-  const tomorrow = end.isBefore(start, 'day');
-  const yesterday = start.isAfter(end, 'day');
+  const tomorrow = isTomorrow(end, start);
+  const yesterday = isYesterday(end, start);
 
   if (diff < 0) {
     const min = Math.abs(Math.round(diff % 60));
@@ -155,18 +186,18 @@ export const timeDifferenceInWords = (
     }${min > 0 ? ` ${min} min` : ''} behind`;
   }
 
-  const min = Math.abs(diff % 60);
+  const min = Math.abs(Math.round(diff % 60));
   const hr = Math.abs(Math.floor(diff / 60));
 
   return hr > 0
     ? `${tomorrow ? 'Tomorrow,' : 'Today,'} ${hr} ${
         min > 0 ? 'hr' : hr > 1 ? 'hours' : 'hour'
-      }${min > 0 || tomorrow ? ` ${min} min` : ''} ahead`
+      }${min > 0 ? ` ${min} min` : ''} ahead`
     : 'Today, same time';
 };
 
 export const getZoneName = () => {
   const dateString = new Date().toString();
-  const zoneAbbr = dateString.split(' ')[6].split(/\(|\)/).join('');
+  const zoneAbbr: string = dateString.split(' ')[6].split(/\(|\)/).join('');
   return { zoneAbbr: zoneAbbr, zoneName: TimezoneAbbreviation[zoneAbbr] };
 };
