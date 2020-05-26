@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import propTypes from 'prop-types';
-import {StyleSheet, View, TouchableOpacity} from 'react-native';
-import {runTiming} from '../../../utils/AnimationHelpers';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { runTiming } from '../../../utils/AnimationHelpers';
 
 import Animated, {
   Value,
@@ -27,11 +27,11 @@ type SwitchProps = {
   checked?: boolean;
 };
 class Switch extends PureComponent {
-  #INDICATORSIZE: number;
-  #PADDING: number;
-  #TIMING_TO_VALUE: number;
-  #STATECHANGED: number;
-  #CLOCK: Animated.Clock;
+  private INDICATORSIZE: number;
+  private PADDING: number;
+  private TIMING_TO_VALUE: number;
+  private STATECHANGED: number;
+  private CLOCK: Animated.Clock;
   state: {
     checked: boolean;
   };
@@ -62,14 +62,14 @@ class Switch extends PureComponent {
   };
   constructor(props: SwitchProps) {
     super(props);
-    // this.#indicatorSize || 70% of the whole element
-    this.#INDICATORSIZE = (props.height || 25) * 0.7;
-    // round(this.#indicatorSize / 4)
-    this.#PADDING = Math.round(this.#INDICATORSIZE / 4);
-    this.#TIMING_TO_VALUE =
-      (props.width || 45) - this.#INDICATORSIZE - this.#PADDING;
-    this.#CLOCK = new Clock();
-    this.#STATECHANGED = -1;
+    // this.indicatorSize || 70% of the whole element
+    this.INDICATORSIZE = (props.height || 25) * 0.7;
+    // round(this.indicatorSize / 4)
+    this.PADDING = Math.round(this.INDICATORSIZE / 4);
+    this.TIMING_TO_VALUE =
+      (props.width || 45) - this.INDICATORSIZE - this.PADDING;
+    this.CLOCK = new Clock();
+    this.STATECHANGED = -1;
     this.props = props;
     this.state = {
       checked: props.checked || false,
@@ -77,36 +77,36 @@ class Switch extends PureComponent {
   }
 
   componentDidMount() {
-    this.#STATECHANGED = -1;
+    this.STATECHANGED = -1;
   }
   componentDidUpdate() {
-    this.#STATECHANGED = -1;
+    this.STATECHANGED = -1;
   }
 
   _animate = (checked: boolean) => {
     return cond(
-      greaterOrEq(this.#STATECHANGED, 0),
+      greaterOrEq(this.STATECHANGED, 0),
       cond(
         eq(Number(checked), 0),
         runTiming({
-          duration: 300,
-          from: this.#TIMING_TO_VALUE,
-          to: this.#PADDING,
-          clock: this.#CLOCK,
+          duration: 250,
+          from: this.TIMING_TO_VALUE,
+          to: this.PADDING,
+          clock: this.CLOCK,
           easing: Easing.elastic(),
         }),
         runTiming({
-          duration: 300,
-          from: this.#PADDING,
-          to: this.#TIMING_TO_VALUE,
-          clock: this.#CLOCK,
+          duration: 250,
+          from: this.PADDING,
+          to: this.TIMING_TO_VALUE,
+          clock: this.CLOCK,
           easing: Easing.elastic(),
         }),
       ),
       cond(
         eq(Number(checked), 1),
-        new Value(this.#TIMING_TO_VALUE),
-        new Value(this.#PADDING),
+        new Value(this.TIMING_TO_VALUE),
+        new Value(this.PADDING),
       ),
     );
   };
@@ -130,12 +130,12 @@ class Switch extends PureComponent {
           accessibilityLabel={'Switch'}
           accessibilityRole={'switch'}
           onPress={() => {
-            this.#STATECHANGED = 0;
+            this.STATECHANGED = 0;
             this.setState({
               ...this.state,
               checked: !this.state.checked,
             });
-
+            console.log('pressed')
             if (typeof onChangeValue === 'function') {
               onChangeValue(this.state.checked);
             }
@@ -167,9 +167,9 @@ class Switch extends PureComponent {
                         : inActiveThumbColor
                         ? inActiveThumbColor
                         : thumbColor,
-                    height: this.#INDICATORSIZE,
-                    width: this.#INDICATORSIZE,
-                    borderRadius: this.#INDICATORSIZE,
+                    height: this.INDICATORSIZE,
+                    width: this.INDICATORSIZE,
+                    borderRadius: this.INDICATORSIZE,
                   },
                   {
                     transform: [

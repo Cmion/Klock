@@ -10,3 +10,8 @@ export interface Cities {
   isSelected: boolean;
   _id: string;
 }
+export interface MenuItems {
+  icon?: string;
+  action: Function;
+  title: string;
+}

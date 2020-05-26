@@ -8,15 +8,10 @@ import {
 } from 'react-native-popup-menu';
 
 import Color from '../../../utils/Color';
-import Font from '../../../utils/Font';
+import { MenuItems } from '../../../utils/Types.d';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import styles from './styles';
 
-interface MenuItems {
-  icon: string;
-  action: Function;
-  title: string;
-}
 interface MenuProps {
   menuStyles?: StyleProp<any>;
   TriggerComponent: React.ComponentType;
@@ -44,7 +39,7 @@ const Menu = ({
         }}>
         <TriggerComponent />
       </MenuTrigger>
-      <MenuOptions optionsContainerStyle={style}>
+      <MenuOptions optionsContainerStyle={[styles.menuOptions, style]}>
         {menuItems.map(({ icon, title, action }: MenuItems, key) => {
           return (
             <MenuOption onSelect={() => action()} key={key}>
@@ -58,9 +53,12 @@ const Menu = ({
                   />
                 )}
                 <Text
-                  style={{
-                    ...(textStyle || {}),
-                  }}>
+                  style={[
+                    styles.textStyle,
+                    {
+                      ...(textStyle || {}),
+                    },
+                  ]}>
                   {title}
                 </Text>
               </View>
@@ -72,16 +70,4 @@ const Menu = ({
   );
 };
 
-Menu.defaultProps = {
-  style: {
-    backgroundColor: Color.SECONDARY,
-    borderRadius: 5,
-    borderWidth: 0,
-  },
-  menuStyles: {},
-  textStyle: {
-    color: Color.TEXTPRIMARY,
-    fontFamily: Font.MEDIUM,
-  },
-};
 export default Menu;
