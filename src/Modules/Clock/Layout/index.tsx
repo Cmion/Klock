@@ -4,7 +4,7 @@ import Color from '../../../_shared/utils/Color';
 import { CLOCKSIZE } from '../../../_shared/utils/Constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../../_shared/components/Partials/Button';
-import ClockUI from '../../../_shared/components/ClockUI';
+import ClockUI from '../../../_shared/components/Partials/ClockUI';
 import moment from 'moment';
 import styles from './styles';
 import * as Localize from 'react-native-localize';

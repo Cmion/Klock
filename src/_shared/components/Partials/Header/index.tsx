@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { connect } from 'react-redux';
-
 import {
   getHeaderSearchValue,
   headerSearchClose,
@@ -18,6 +17,7 @@ import styles from './styles';
 import Animated, { Easing } from 'react-native-reanimated';
 import { runTiming } from '../../../utils/AnimationHelpers';
 import Menu from '../Menu';
+import { useNavigation } from '@react-navigation/native';
 
 interface TZProps {
   navigate: Function;
@@ -52,14 +52,13 @@ const Header = (props: HeaderProps) => {
   const useModalMenu = props?.useModalMenu || false;
   const useSearch = props?.useSearch || false;
   const useBorder = props?.useBorder || false;
-  const navigation = props?.navigation;
   const useElevation = props?.useElevation || false;
-
+  const { navigate, goBack } = useNavigation();
   const menuItems = [
     {
       title: 'Settings',
       icon: 'settings',
-      action: () => console.log('Settings'),
+      action: () => navigate('Settings'),
     },
     {
       title: 'Feedback/Help',
@@ -105,12 +104,10 @@ const Header = (props: HeaderProps) => {
               activeOpacity={0.8}
               style={styles.backBtn}
               onPress={() => {
-                if (typeof navigation?.goBack === 'function') {
-                  navigation?.goBack();
-                }
                 if (useSearch) {
                   headerSearchClose(true);
                 }
+                goBack();
               }}>
               <Icon name={'arrow-back'} size={26} color={Color.HEADERICON} />
             </TouchableOpacity>
