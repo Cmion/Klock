@@ -15,14 +15,19 @@ import Modal from 'react-native-modal';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { onScrollEvent } from '../../utils/AnimationHelpers';
-import Animated, { cond, eq, useCode, call } from 'react-native-reanimated';
-
+import Animated, {
+  cond,
+  eq,
+  useCode,
+  call,
+  onChange,
+} from 'react-native-reanimated';
+import Radio from '../Partials/Radio';
 const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Color.BACKGROUND,
-    paddingHorizontal: 20,
   },
   text: {
     fontSize: 20,
@@ -91,12 +96,87 @@ const Toggler = ({
     </View>
   );
 };
+
+const RadioList = ({
+  items,
+  // eslint-disable-next-line no-shadow
+  onChange,
+}: {
+  items: Array<{ label: string; value: any }>;
+  onChange: Function;
+}) => {
+  const [selected, setSelected] = useState(
+    items.reduce(
+      (prev: any, _, key: number) => ({ ...prev, [`radio_${key}`]: false }),
+      {},
+    ),
+  );
+  const [current, setCurrent] = useState('');
+
+  const handleRadioSelect = (key: string) => {
+    setSelected((prev: any) => ({
+      ...prev,
+      [key]: true,
+      ...(current ? { [current]: false } : {}),
+    }));
+  };
+
+  return (
+    <>
+      {items &&
+        Array.isArray(items) &&
+        items.map((value: any, key: number) => {
+          return (
+            <TouchableNativeFeedback
+              key={key}
+              style={{
+                paddingVertical: 20,
+                paddingHorizontal: 20,
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingRight: 10,
+                  }}>
+                  <Radio
+                    isSelected={selected[`radio_${key}`]}
+                    onPress={() => {
+                      handleRadioSelect(`radio_${key}`);
+                      setCurrent(`radio_${key}`);
+                      if (onChange && typeof onChange === 'function') {
+                        onChange(value);
+                      }
+                    }}
+                  />
+                </View>
+                <Text
+                  style={{
+                    fontFamily: Font.NORMAL,
+                    fontSize: 14,
+                    color: Color.PRIMARY,
+                  }}>
+                  Analog
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
+          );
+        })}
+    </>
+  );
+};
 const ModalSelector = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const top = new Animated.Value(0);
-  const bottom = new Animated.Value(0);
   const scrollEvent = onScrollEvent({ y: top });
   useCode(() => call([top], console.log), [top]);
+  const [selected, setSelected] = useState({});
+  console.log(selected);
   return (
     <View
       style={{
@@ -167,43 +247,10 @@ const ModalSelector = () => {
             contentContainerStyle={{
               paddingBottom: 20,
             }}>
-            {Array(15)
-              .fill(0)
-              .map((_, key) => {
-                return (
-                  <TouchableNativeFeedback
-                    key={key}
-                    style={{
-                      paddingVertical: 20,
-                      paddingHorizontal: 20,
-                    }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Icon
-                        name={'radio-button-unchecked'}
-                        size={24}
-                        color={Color.TEXTPRIMARY}
-                        selectionColor={Color.PRIMARY}
-                        importantForAccessibility={'yes'}
-                        style={{
-                          paddingRight: 10,
-                        }}
-                      />
-                      <Text
-                        style={{
-                          fontFamily: Font.NORMAL,
-                          fontSize: 14,
-                          color: Color.PRIMARY,
-                        }}>
-                        Analog
-                      </Text>
-                    </View>
-                  </TouchableNativeFeedback>
-                );
-              })}
+            <RadioList
+              onChange={setSelected}
+              items={Array(20).fill({ value: 8, label: 'Anaolo' })}
+            />
           </Animated.ScrollView>
           <View
             style={{
@@ -235,8 +282,11 @@ const Settings = () => {
     <View style={styles.container}>
       <View
         style={{
-          paddingTop: 30,
+          paddingVertical: 30,
           justifyContent: 'center',
+          borderBottomColor: Color.DARK,
+          borderBottomWidth: 1,
+          paddingHorizontal: 20,
         }}>
         <View
           style={{
@@ -304,6 +354,60 @@ const Settings = () => {
           />
 
           <ModalSelector />
+          <TouchableOpacity
+            style={{
+              justifyContent: 'center',
+              marginBottom: 20,
+            }}>
+            <Text
+              style={{
+                fontFamily: Font.MEDIUM,
+                fontSize: 16,
+                color: Color.TEXTPRIMARY,
+                paddingBottom: 10,
+              }}>
+              Change date and time
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              justifyContent: 'center',
+              marginBottom: 20,
+            }}>
+            <Text
+              style={{
+                fontFamily: Font.MEDIUM,
+                fontSize: 16,
+                color: Color.TEXTPRIMARY,
+                paddingBottom: 10,
+              }}>
+              Language
+            </Text>
+            <Menu
+              style={{
+                elevation: 0,
+                width: 130,
+                borderRadius: 5,
+              }}
+              textStyle={{
+                paddingHorizontal: 10,
+              }}
+              menuItems={[
+                { title: 'English', action: () => console.log('English') },
+                { title: 'German', action: () => console.log('German') },
+              ]}
+              TriggerComponent={() => (
+                <Text
+                  style={{
+                    fontFamily: Font.NORMAL,
+                    fontSize: 14,
+                    color: Color.PRIMARY,
+                  }}>
+                  English
+                </Text>
+              )}
+            />
+          </View>
         </View>
       </View>
     </View>
