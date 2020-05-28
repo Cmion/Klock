@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleProp } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleProp,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+} from 'react-native';
 import {
   Menu as PopoverMenu,
   MenuOptions,
@@ -18,6 +25,7 @@ interface MenuProps {
   style?: StyleProp<any>;
   textStyle?: StyleProp<any>;
   menuItems: MenuItems[];
+  TriggerType: 'feedback' | 'highlight' | 'opacity';
 }
 const Menu = ({
   menuStyles,
@@ -25,12 +33,23 @@ const Menu = ({
   style,
   menuItems,
   textStyle,
+  TriggerType,
 }: MenuProps) => {
+  const handleTriggerType = (type = 'opacity') => {
+    if (type === 'feedback') {
+      return TouchableNativeFeedback;
+    }
+    if (type === 'highlight') {
+      return TouchableHighlight;
+    }
+
+    return TouchableOpacity;
+  };
   return (
     <PopoverMenu>
       <MenuTrigger
         customStyles={{
-          TriggerTouchableComponent: TouchableOpacity,
+          TriggerTouchableComponent: handleTriggerType(TriggerType),
           triggerWrapper: menuStyles,
           triggerOuterWrapper: menuStyles,
           triggerTouchable: {
