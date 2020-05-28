@@ -54,4 +54,12 @@ export default StyleSheet.create({
     paddingLeft: 30,
     paddingVertical: 15,
   },
+  volumeText: { paddingBottom: 15 },
+  sliderThumbStyle: {
+    borderWidth: 3,
+    height: 25,
+    width: 25,
+    borderRadius: 25,
+    borderColor: Color.BACKGROUND,
+  },
 });

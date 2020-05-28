@@ -11,6 +11,8 @@ import Toggler from './partials/Toggler';
 import ModalSelector from './partials/ModalSelector';
 import MenuSelector from './partials/MenuSelector';
 import styles from './styles';
+import Color from '../../utils/Color';
+import Slider from 'react-native-slider';
 
 const { width } = Dimensions.get('window');
 
@@ -80,6 +82,25 @@ const Settings = () => {
             selected={'Sunday'}
             style={styles.items}
           />
+          <View style={styles.clickable}>
+            <Text style={[styles.clickableText, styles.volumeText]}>
+              Volume
+            </Text>
+            <Slider
+              style={{
+                width: width - 80,
+              }}
+              animateTransitions={true}
+              value={5}
+              minimumValue={0}
+              maximumValue={7}
+              step={1}
+              thumbTintColor={Color.PRIMARY}
+              minimumTrackTintColor={Color.PRIMARY}
+              maximumTrackTintColor={Color.SECONDARY}
+              thumbStyle={styles.sliderThumbStyle}
+            />
+          </View>
           <MenuSelector
             title={'Volume buttons'}
             selected={'Control volume'}
