@@ -73,10 +73,7 @@ const ModalSelector = ({
               onChange={(selected: any) => {
                 console.log(selected);
               }}
-              style={{
-                paddingHorizontal: 20,
-                paddingVertical: 20,
-              }}
+              style={styles.radioGroup}
               items={Array(20).fill({ value: 8, label: 'Anaolo' })}
             />
           </Animated.ScrollView>

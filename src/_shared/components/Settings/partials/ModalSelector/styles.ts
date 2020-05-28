@@ -28,6 +28,10 @@ export default StyleSheet.create({
     borderBottomColor: Color.BACKGROUND,
     padding: 20,
   },
+  radioGroup: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
   headerText: {
     fontFamily: Font.MEDIUM,
     fontSize: 20,
