@@ -1,15 +1,16 @@
-import {applyMiddleware, createStore} from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import rootReducers from './reducers';
 import customMiddleware from './middlewares';
 import {
   DatabaseToConfig as collections,
   insertMany,
 } from '../_shared/utils/RealmDB';
-import {withCities, withZones} from '../../assets/Timezone';
-import {openDB} from './../_shared/utils/RealmDB/hooks';
-import {ObjectSchema, MigrationCallback} from 'realm';
-import {Collection} from '../_shared/utils/Constants';
-import {INITIALIZE_APP} from './actions';
+import { withCities, withZones } from '../../assets/Timezone';
+import { openDB, insertOne } from './../_shared/utils/RealmDB/hooks';
+import { ObjectSchema, MigrationCallback } from 'realm';
+import { Collection } from '../_shared/utils/Constants';
+import { INITIALIZE_APP } from './actions';
+import { defaultSettings } from './../_shared/data/settings';
 
 const middlewares = applyMiddleware(...customMiddleware);
 
@@ -20,7 +21,7 @@ const store = createStore(rootReducers, middlewares);
 const appSchema = collections?.app?.schema;
 const appPath = collections?.app?.path;
 const appSchemaVersion = collections?.app?.schemaVersion;
-const {database, name} = openDB(appPath, appSchema, appSchemaVersion);
+const { database, name } = openDB(appPath, appSchema, appSchemaVersion);
 
 interface collectionProps {
   schema: ObjectSchema;
@@ -38,7 +39,7 @@ Object.keys(collections)
     if (!isInitialized) {
       // If app is not init, initialize it.
       database.write(() => {
-        database.create(name, {_id: collection, isInitialized: true});
+        database.create(name, { _id: collection, isInitialized: true });
       });
       const currentCollectionConfig: collectionProps = collections[collection];
       const schema = currentCollectionConfig?.schema;
@@ -74,8 +75,20 @@ Object.keys(collections)
           },
         });
       }
+      if (collection.toLowerCase() === Collection.SETTINGS) {
+        if (currentDB.database) {
+          insertOne(currentDB, defaultSettings);
+        }
+        store.dispatch({
+          type: INITIALIZE_APP,
+          payload: {
+            key: Collection.SETTINGS,
+            isInitialized: true,
+          },
+        });
+      }
     }
   });
 
 console.info(`Klock successfully initialized @ [${new Date().toString()}]`);
-export {store};
+export { store };

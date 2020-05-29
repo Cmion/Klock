@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,32 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-
 import Toggler from './partials/Toggler';
 import ModalSelector from './partials/ModalSelector';
 import MenuSelector from './partials/MenuSelector';
 import styles from './styles';
 import Color from '../../utils/Color';
 import Slider from 'react-native-slider';
-
+import { useNavigation } from '@react-navigation/native';
+import { Collection } from '../../utils';
+import { getAll, SETTINGS_GET_ALL } from '../../../redux/actions';
+import { connect } from 'react-redux';
 const { width } = Dimensions.get('window');
 
-const Settings = () => {
+// eslint-disable-next-line no-shadow
+const Settings = ({ getAll }: { getAll: Function }) => {
+  const { addListener } = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = addListener('focus', () => {
+      getAll({
+        db: Collection.SETTINGS,
+        onSuccess: SETTINGS_GET_ALL,
+      });
+    });
+
+    return unsubscribe;
+  }, [addListener, getAll]);
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.container}>
@@ -136,4 +151,10 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+const stateToProps = (state: any) => ({
+  settings: state.settings.current,
+});
+const dispatchToProps = {
+  getAll,
+};
+export default connect(stateToProps, dispatchToProps)(Settings);

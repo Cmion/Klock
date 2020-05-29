@@ -1,10 +1,10 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import {View, Text, StyleSheet, TextInput} from 'react-native';
+import { View, Text, StyleSheet, TextInput } from 'react-native';
 import Color from '../../_shared/utils/Color';
 import Font from '../../_shared/utils/Font';
-import {debounce} from '../../_shared/utils/Helpers';
-import {Collection} from '../../_shared/utils/Constants';
+import { debounce } from '../../_shared/utils/Helpers';
+import { Collection } from '../../_shared/utils/Constants';
 
 import {
   openDB,
@@ -25,9 +25,10 @@ import {
   AppConfig,
   CityConfig,
   TimezoneConfig,
+  SettingsConfig,
   prettify,
 } from '../../_shared/utils/RealmDB';
-import {TouchableOpacity, FlatList} from 'react-native-gesture-handler';
+import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import {
   insertOne,
   ZONE_INSERT_ONE,
@@ -41,9 +42,9 @@ import {
   insertMany,
 } from '../../redux/actions';
 
-import {connect} from 'react-redux';
-import {findOne} from './../../redux/actions/db';
-import {CITY_FIND_ONE} from './../../redux/actions/timezone/city';
+import { connect } from 'react-redux';
+import { findOne } from './../../redux/actions/db';
+import { CITY_FIND_ONE } from './../../redux/actions/timezone/city';
 
 const styles = StyleSheet.create({
   container: {
@@ -127,7 +128,7 @@ const Alarm = ({
             ),
           );
         }}>
-        <Text style={{fontSize: 30, color: 'orange'}}>Find</Text>
+        <Text style={{ fontSize: 30, color: 'orange' }}>Find</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
@@ -142,26 +143,34 @@ const Alarm = ({
           );
           deleteAll(
             openDB(
+              SettingsConfig.path,
+              SettingsConfig.schema,
+              SettingsConfig.schemaVersion,
+              SettingsConfig.migration,
+            ),
+          );
+          deleteAll(
+            openDB(
               CityConfig.path,
               CityConfig.schema,
               CityConfig.schemaVersion,
               CityConfig.migration,
             ),
           );
-          const {path, schema, schemaVersion} = AppConfig;
+          const { path, schema, schemaVersion } = AppConfig;
           const db = openDB(path, schema, schemaVersion);
           console.log(db);
           deleteAll(db);
         }}>
-        <Text style={{fontSize: 30, color: 'crimson'}}>Delete</Text>
+        <Text style={{ fontSize: 30, color: 'crimson' }}>Delete</Text>
       </TouchableOpacity>
-      <Text style={{fontSize: 15, color: 'aqua'}}>{zoneData[0]?.text}</Text>
+      <Text style={{ fontSize: 15, color: 'aqua' }}>{zoneData[0]?.text}</Text>
       <FlatList
         data={cityData}
         keyExtractor={(item) => item._id}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return (
-            <Text style={{fontSize: 15, color: 'aqua'}} key={item._id}>
+            <Text style={{ fontSize: 15, color: 'aqua' }} key={item._id}>
               {item?.city}
             </Text>
           );

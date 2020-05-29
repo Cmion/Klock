@@ -150,17 +150,19 @@ export const getAll = ({
   db,
   onSuccess,
   sort,
+  sortParam,
 }: {
   db: string;
   onSuccess: string;
-  sort: { param: string; order: string };
-  sortParam: string;
+  sort?: { param: string; order: string };
+  sortParam?: string;
 }) => ({
   type: GET_ALL,
   meta: {
     db,
     onSuccess,
     sort,
+    sortParam,
   },
 });
 export const insertMany = ({

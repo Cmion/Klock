@@ -162,10 +162,8 @@ const Retrieve = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
   ) {
     const onSuccess: string = action?.meta?.onSuccess;
     const collection: string = action?.meta?.db;
-    const {
-      param: sortParam,
-      order: sortOrder,
-    }: { param: string; order: string } = action?.meta?.sort;
+    const sortParam: string = action?.meta?.sort?.sortParam;
+    const sortOrder: string = action?.meta?.sort?.sortOrder;
     const { path, schemaVersion, schema, migration } = DatabaseToConfig[
       collection
     ];
