@@ -26,6 +26,7 @@ interface MenuProps {
   textStyle?: StyleProp<any>;
   menuItems: MenuItems[];
   TriggerType: 'feedback' | 'highlight' | 'opacity';
+  highlightFirst?: boolean;
 }
 const Menu = ({
   menuStyles,
@@ -34,6 +35,7 @@ const Menu = ({
   menuItems,
   textStyle,
   TriggerType,
+  highlightFirst,
 }: MenuProps) => {
   const handleTriggerType = (type = 'opacity') => {
     if (type === 'feedback') {
@@ -74,6 +76,12 @@ const Menu = ({
                 <Text
                   style={[
                     styles.textStyle,
+                    {
+                      color:
+                        highlightFirst && key === 0
+                          ? Color.PRIMARY
+                          : Color.TEXTPRIMARY,
+                    },
                     {
                       ...(textStyle || {}),
                     },

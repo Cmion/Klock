@@ -8,19 +8,25 @@ const RadioGroup = ({
   onChange,
   label,
   style,
+  selected: defaultValue,
 }: {
   items: Array<{ label: string; value: any }>;
   onChange: Function;
   label: string;
   style: StyleProp<{}>;
+  selected: number | string;
 }) => {
   const [selected, setSelected] = useState(
     items.reduce(
-      (prev: any, _, key: number) => ({ ...prev, [`${label}_${key}`]: false }),
+      (prev: any, _, key: number) => ({
+        ...prev,
+        [`${label}_${key}`]: false,
+        [`${label}_${defaultValue}`]: true,
+      }),
       {},
     ),
   );
-  const [current, setCurrent] = useState('');
+  const [current, setCurrent] = useState(`${label}_${defaultValue}`);
 
   const handleRadioSelect = (key: string) => {
     setSelected((prev: any) => ({
@@ -34,7 +40,7 @@ const RadioGroup = ({
     <>
       {items &&
         Array.isArray(items) &&
-        items.map((value: any, key: number) => {
+        items.map((item: any, key: number) => {
           return (
             <TouchableNativeFeedback key={key} style={[styles.container]}>
               <View style={[styles.main, style]}>
@@ -45,12 +51,12 @@ const RadioGroup = ({
                       handleRadioSelect(`${label}_${key}`);
                       setCurrent(`${label}_${key}`);
                       if (onChange && typeof onChange === 'function') {
-                        onChange(value);
+                        onChange(item?.value);
                       }
                     }}
                   />
                 </View>
-                <Text style={styles.displayText}>Analog</Text>
+                <Text style={styles.displayText}>{item?.label}</Text>
               </View>
             </TouchableNativeFeedback>
           );

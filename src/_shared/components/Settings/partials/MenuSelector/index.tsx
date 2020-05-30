@@ -7,25 +7,38 @@ const MenuSelector = ({
   title,
   selected,
   style,
+  data,
+  action,
 }: {
   title: string;
-  selected: string;
+  selected: number;
   style?: StyleProp<{}>;
+  data: Array<{ label: string; value: number }>;
+  action: Function;
 }) => {
+  const rearrangedData = [
+    (data || []).find((item: any) => item.value === selected),
+    ...(data || []).filter((item) => item.value !== selected),
+  ].map((_: any) => {
+    return {
+      title: _?.label,
+      action: () => action(_?.value),
+    };
+  });
   return (
     <View style={[styles.container]}>
       <Menu
         style={[styles.menu]}
         textStyle={styles.menuText}
-        menuItems={[
-          { title: 'English', action: () => console.log('English') },
-          { title: 'German', action: () => console.log('German') },
-        ]}
+        menuItems={rearrangedData}
         TriggerType={'feedback'}
+        highlightFirst
         TriggerComponent={() => (
           <View style={style}>
             <Text style={styles.displayText}>{title}</Text>
-            <Text style={styles.subText}>{selected}</Text>
+            <Text style={styles.subText}>
+              {(data || []).find((item) => item.value === selected)?.label}
+            </Text>
           </View>
         )}
       />

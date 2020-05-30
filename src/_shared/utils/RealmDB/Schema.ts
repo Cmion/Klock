@@ -34,8 +34,10 @@ export const CitySchema = {
 };
 export const SettingsSchema = {
   name: 'Settings',
+  primaryKey: 'settings_type',
   properties: {
     clock_style: { type: 'int', default: 1 },
+    settings_type: { type: 'string' },
     display_time_with_seconds: { type: 'bool', default: false },
     automatic_home_clock: { type: 'bool', default: false },
     home_time_zone: {
@@ -53,6 +55,8 @@ export const SettingsSchema = {
     alarm_increase_volume: { type: 'int', default: 1 },
     timer_increase_volume: { type: 'int', default: 1 },
     timer_sound: { type: 'string[]' },
+    updatedAt: { type: 'date', default: new Date().toString() },
+    createdAt: { type: 'date', default: new Date().toString() },
   },
 };
 
@@ -110,7 +114,7 @@ export const AppConfig = {
 };
 export const SettingsConfig = {
   schema: SettingsSchema,
-  schemaVersion: 2,
+  schemaVersion: 6,
   path: 'KLOCK_SETTINGS_EXP.realm',
   migration: function () {
     /* Migration function will go in here */

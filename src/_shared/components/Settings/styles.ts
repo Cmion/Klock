@@ -37,7 +37,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingLeft: 30,
-    paddingVertical: 20,
+    paddingVertical: 15,
   },
   clickableText: {
     fontFamily: Font.MEDIUM,
@@ -54,7 +54,7 @@ export default StyleSheet.create({
     paddingLeft: 30,
     paddingVertical: 15,
   },
-  volumeText: { paddingBottom: 15 },
+  // volumeText: { paddingBottom: 15 },
   sliderThumbStyle: {
     borderWidth: 3,
     height: 25,

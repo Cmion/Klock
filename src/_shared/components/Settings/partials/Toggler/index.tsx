@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleProp } from 'react-native';
 import Switch from '../../../Partials/Switch';
 import styles from './styles';
 
@@ -16,6 +16,7 @@ const Toggler = ({
   subTitle?: string;
   style?: StyleProp<{}>;
 }) => {
+  console.log('Toggler', active);
   return (
     <View style={[style]}>
       <View style={styles.container}>

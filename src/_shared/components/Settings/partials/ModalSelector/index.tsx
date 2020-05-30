@@ -19,10 +19,14 @@ const ModalSelector = ({
   title,
   selected,
   style,
+  data,
+  action,
 }: {
   title: string;
-  selected: string;
+  selected: number | string | undefined;
   style?: StyleProp<{}>;
+  action: Function;
+  data: Array<{ label: string; value: number }>;
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const top = new Animated.Value(0);
@@ -37,12 +41,16 @@ const ModalSelector = ({
           setModalOpen(true);
         }}>
         <Text style={styles.displayText}>{title}</Text>
-        <Text style={styles.subText}>{selected}</Text>
+        <Text style={styles.subText}>
+          {(data || []).find((item: any) => item.value === selected)?.label}
+        </Text>
       </TouchableOpacity>
       <Modal
         isVisible={modalOpen}
         backdropColor={Color.DARK}
         style={styles.modal}
+        onBackdropPress={() => setModalOpen(false)}
+        onBackButtonPress={() => setModalOpen(false)}
         backdropOpacity={0.5}>
         <StatusBar
           barStyle={'light-content'}
@@ -68,13 +76,16 @@ const ModalSelector = ({
             onScroll={scrollEvent}
             contentContainerStyle={styles.scroll}>
             <RadioGroup
-              label={'timezone'}
+              label={title}
               // eslint-disable-next-line no-shadow
               onChange={(selected: any) => {
-                console.log(selected);
+                action(selected);
               }}
+              selected={(data || []).findIndex(
+                (item) => item.value === selected,
+              )}
               style={styles.radioGroup}
-              items={Array(20).fill({ value: 8, label: 'Anaolo' })}
+              items={data}
             />
           </Animated.ScrollView>
           <View style={styles.modalFooter}>

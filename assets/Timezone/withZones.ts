@@ -441,7 +441,7 @@ export default [
     abbr: 'MDT',
     offset: 1,
     isdst: true,
-    text: '(UTC) Casablanca',
+    text: '(UTC+00:00) Casablanca',
     utc: ['Africa/Casablanca', 'Africa/El_Aaiun'],
   },
   {
@@ -449,7 +449,7 @@ export default [
     abbr: 'UTC',
     offset: 0,
     isdst: false,
-    text: '(UTC) Coordinated Universal Time',
+    text: '(UTC+00:00) Coordinated Universal Time',
     utc: ['America/Danmarkshavn', 'Etc/GMT'],
   },
   {
@@ -457,7 +457,7 @@ export default [
     abbr: 'GMT',
     offset: 0,
     isdst: false,
-    text: '(UTC) Edinburgh, London',
+    text: '(UTC+00:00) Edinburgh, London',
     utc: [
       'Europe/Isle_of_Man',
       'Europe/Guernsey',
@@ -483,7 +483,7 @@ export default [
     abbr: 'GDT',
     offset: 1,
     isdst: true,
-    text: '(UTC) Dublin, Lisbon',
+    text: '(UTC+00:00) Dublin, Lisbon',
     utc: [
       'Atlantic/Canary',
       'Atlantic/Faeroe',
@@ -497,7 +497,7 @@ export default [
     abbr: 'GST',
     offset: 0,
     isdst: false,
-    text: '(UTC) Monrovia, Reykjavik',
+    text: '(UTC+00:00) Monrovia, Reykjavik',
     utc: [
       'Africa/Abidjan',
       'Africa/Accra',

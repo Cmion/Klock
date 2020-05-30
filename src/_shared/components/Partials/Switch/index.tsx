@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import propTypes from 'prop-types';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { runTiming } from '../../../utils/AnimationHelpers';
@@ -24,9 +24,9 @@ type SwitchProps = {
   thumbColor?: string;
   inActiveThumbColor?: string;
   disabled?: boolean;
-  checked?: boolean;
+  checked: boolean;
 };
-class Switch extends PureComponent {
+class Switch extends Component {
   private INDICATORSIZE: number;
   private PADDING: number;
   private TIMING_TO_VALUE: number;
@@ -135,9 +135,9 @@ class Switch extends PureComponent {
               ...this.state,
               checked: !this.state.checked,
             });
-            console.log('pressed')
+            // console.log('pressed')
             if (typeof onChangeValue === 'function') {
-              onChangeValue(this.state.checked);
+              onChangeValue(!this.state.checked);
             }
           }}>
           <Animated.View>

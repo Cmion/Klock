@@ -6,6 +6,7 @@ export default StyleSheet.create({
   container: {
     marginVertical: 20,
     marginHorizontal: 20,
+    height: 40,
   },
   main: {
     flexDirection: 'row',
@@ -20,5 +21,7 @@ export default StyleSheet.create({
     fontFamily: Font.NORMAL,
     fontSize: 14,
     color: Color.PRIMARY,
+    lineHeight: 28,
+    paddingRight: 20,
   },
 });
