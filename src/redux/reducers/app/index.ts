@@ -1,4 +1,4 @@
-import {INITIALIZE_APP, CHECK_INIT} from './../../actions/app/index';
+import { INITIALIZE_APP, CHECK_INIT } from './../../actions/app/index';
 const initialState = {
   initialized: {},
 };

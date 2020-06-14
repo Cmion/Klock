@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import Color from '../../../_shared/utils/Color';
 import { CLOCKSIZE } from '../../../_shared/utils/Constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../../../_shared/components/Partials/Button';
-import ClockUI from '../../../_shared/components/ClockUI';
+import ClockUI from '../../../_shared/components/Partials/ClockUI';
 import moment from 'moment';
 import styles from './styles';
 import * as Localize from 'react-native-localize';
@@ -15,7 +15,6 @@ import {
   TABBARHEIGHT,
   Collection,
   getZoneName,
-  debounce,
 } from '../../../_shared/utils';
 import { Cities } from '../../../_shared/utils/Types';
 import { connect } from 'react-redux';
@@ -38,10 +37,6 @@ const Layout = ({ findAll, cities }: LayoutProps) => {
   const [timezoneName, setTimezoneName] = useState(getZoneName());
   const { navigate, addListener } = useNavigation();
 
-  const setTimezoneNameDebounced = useMemo(
-    () => debounce(() => setTimezoneName(getZoneName())),
-    [],
-  );
   useEffect(() => {
     const unsubscribe = addListener('focus', () => {
       findAll({
@@ -57,7 +52,7 @@ const Layout = ({ findAll, cities }: LayoutProps) => {
     });
 
     return unsubscribe;
-  }, [findAll, addListener, setTimezoneNameDebounced]);
+  }, [findAll, addListener, setTimezoneName]);
 
   const zoneAbbr = timezoneName.zoneAbbr;
   const zoneName = timezoneName.zoneName;
@@ -107,7 +102,7 @@ const Layout = ({ findAll, cities }: LayoutProps) => {
                 dst,
                 utcOffset,
                 setter: moment({ ...time }),
-                keepLocalTime: true,
+                keepLocalTime: false,
               });
               const cityTime = parseDST({
                 dst,

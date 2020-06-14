@@ -5,7 +5,7 @@ import Font from '../../../utils/Font';
 export default StyleSheet.create({
   header: {
     borderBottomColor: Color.DARK,
-    paddingBottom: 20,
+    paddingBottom: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -30,6 +30,9 @@ export default StyleSheet.create({
     borderRadius: 35,
 
     // paddingRight: 20
+  },
+  menuItemText: {
+    paddingHorizontal: 10,
   },
   horizontalCenter: {
     flexDirection: 'row',

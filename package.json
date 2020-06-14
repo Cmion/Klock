@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.10.3",
-    "@react-native-community/blur": "^3.6.0",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/slider": "^3.0.0",
     "@react-navigation/bottom-tabs": "^5.2.7",
     "@react-navigation/drawer": "^5.5.0",
     "@react-navigation/native": "^5.1.6",
@@ -34,6 +34,7 @@
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.5.0",
     "react-native-shadow": "^1.2.2",
+    "react-native-slider": "^0.11.0",
     "react-native-svg": "^12.1.0",
     "react-native-vector-icons": "^6.6.0",
     "react-redux": "^7.2.0",

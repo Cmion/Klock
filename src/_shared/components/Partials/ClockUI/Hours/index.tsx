@@ -1,6 +1,6 @@
 import React from 'react';
-import Svg, {G, Text, TSpan} from 'react-native-svg';
-import Color from '../../../utils/Color';
+import Svg, { G, Text, TSpan } from 'react-native-svg';
+import Color from '../../../../utils/Color';
 
 interface HoursProps {
   height: number;
@@ -8,13 +8,13 @@ interface HoursProps {
   style?: object;
   fontSize: number;
 }
-export default ({height, width, style, fontSize}: HoursProps) => {
+export default ({ height, width, style, fontSize }: HoursProps) => {
   return (
     <Svg
       width={width}
       height={height}
       viewBox={`0 0 ${233} ${233}`}
-      style={{...(style || {})}}>
+      style={{ ...(style || {}) }}>
       <G transform="translate(-72 -164)">
         <G transform="translate(1)">
           <Text

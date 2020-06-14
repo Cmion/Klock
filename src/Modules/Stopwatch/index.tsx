@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Color from '../../_shared/utils/Color';
 import Font from '../../_shared/utils/Font';
-import Checkbox from '../../_shared/components/Partials/Checkbox';
+import Slider from 'react-native-slider';
 
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -22,7 +23,27 @@ const Stopwatch = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Stopwatch View</Text>
-      <Checkbox checked={true} size={30} />
+      <Slider
+        style={{
+          width: 350,
+          height: 40,
+        }}
+        animateTransitions={true}
+        value={5}
+        minimumValue={0}
+        maximumValue={7}
+        step={1}
+        thumbTintColor={Color.PRIMARY}
+        minimumTrackTintColor={Color.PRIMARY}
+        maximumTrackTintColor={Color.SECONDARY}
+        thumbStyle={{
+          borderWidth: 3,
+          height: 25,
+          width: 25,
+          borderRadius: 25,
+          borderColor: Color.BACKGROUND,
+        }}
+      />
     </View>
   );
 };

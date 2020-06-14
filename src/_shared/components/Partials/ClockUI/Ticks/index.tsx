@@ -1,6 +1,6 @@
 import React from 'react';
-import Svg, {G, Circle} from 'react-native-svg';
-import Color from '../../../utils/Color';
+import Svg, { G, Circle } from 'react-native-svg';
+import Color from '../../../../utils/Color';
 
 interface TicksProps {
   height: number;
@@ -8,13 +8,13 @@ interface TicksProps {
   opacity: number;
   style?: object;
 }
-export default ({height, width, opacity, style}: TicksProps) => {
+export default ({ height, width, opacity, style }: TicksProps) => {
   return (
     <Svg
       width={width}
       height={height}
       viewBox={`0 0 ${183} ${183}`}
-      style={{...(style || {})}}>
+      style={{ ...(style || {}) }}>
       <G id="ticks" transform="translate(-97 -189)" opacity={opacity || 0.5}>
         <G id="ticks-2" data-name="ticks">
           <G id="dots" transform="translate(187 189)">

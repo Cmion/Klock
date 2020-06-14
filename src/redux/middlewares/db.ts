@@ -162,10 +162,8 @@ const Retrieve = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
   ) {
     const onSuccess: string = action?.meta?.onSuccess;
     const collection: string = action?.meta?.db;
-    const {
-      param: sortParam,
-      order: sortOrder,
-    }: { param: string; order: string } = action?.meta?.sort;
+    const sortParam: string = action?.meta?.sort?.sortParam;
+    const sortOrder: string = action?.meta?.sort?.sortOrder;
     const { path, schemaVersion, schema, migration } = DatabaseToConfig[
       collection
     ];
@@ -210,7 +208,10 @@ const Retrieve = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
           if (sortParam) {
             dispatch({
               type: onSuccess,
-              payload: sort(resource, sortParam, sortOrder === 'asc'),
+              payload:
+                type === GET_ALL
+                  ? sort(resource, sortParam, sortOrder === 'asc')
+                  : resource,
             });
           } else {
             dispatch({
@@ -246,10 +247,11 @@ const Update = ({ dispatch }: { dispatch: Dispatch }) => (next: Function) => (
     );
     const data = action?.payload;
     const database = db?.database;
-
+    const id = action?.meta?.id;
     // Listen for changes
     database.objects(db?.name).addListener((current: any, changes: any) => {
       if (type === UPDATE_BY_ID) {
+        console.log(changes?.modifications?.length, 'LLLLL');
         changes.modifications.forEach((index: number) => {
           if (typeof onSuccess === 'string') {
             dispatch({

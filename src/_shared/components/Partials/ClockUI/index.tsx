@@ -2,11 +2,11 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import Color from '../../utils/Color';
+import Color from '../../../utils/Color';
 import Ticks from './Ticks';
 import Hours from './Hours';
 import Hands from './Hands';
-import { time2Angle } from '../../utils/AnimationHelpers';
+import { time2Angle } from '../../../utils/AnimationHelpers';
 
 const styles = StyleSheet.create({
   container: {

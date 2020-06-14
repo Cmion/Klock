@@ -3,6 +3,7 @@ import Navigation from '../BottomTabs/index';
 import CreateStackNav from '../../_shared/components/CreateStackNav';
 import Header from '../../_shared/components/Partials/Header';
 import Timezone from '../../_shared/components/Timezone';
+import Settings from '../../_shared/components/Settings';
 
 const RootStack = () => (
   <CreateStackNav
@@ -28,13 +29,34 @@ const RootStack = () => (
                 <Header
                   useBackIcon
                   routeName={'Timezone'}
-                  route={props?.routes}
                   headerKey={'clock_timezone'}
                   useElevation={useElevation}
                   navigation={props?.navigation}
                   useSearch
                   useBorder
                   searchOn
+                  headerMenu={['default']}
+                />
+              );
+            },
+          },
+        },
+      },
+      {
+        name: 'Settings',
+        component: Settings,
+        screenOptions: {
+          options: {
+            headerStyle: { backgroundColor: 'transparent' },
+            header: (props: any) => {
+              return (
+                <Header
+                  useBackIcon
+                  routeName={'Settings'}
+                  headerKey={'clock_settings'}
+                  navigation={props?.navigation}
+                  useBorder
+                  headerMenu={['Send feedback', 'Help']}
                 />
               );
             },

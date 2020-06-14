@@ -1,8 +1,8 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import Svg, {Line, Circle} from 'react-native-svg';
+import { StyleSheet } from 'react-native';
+import Svg, { Line, Circle } from 'react-native-svg';
 import Animated from 'react-native-reanimated';
-import Color from '../../../utils/Color';
+import Color from '../../../../utils/Color';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 
@@ -45,7 +45,7 @@ const Hands = ({
       width={size}
       style={{
         ...styles.absoluteView,
-        transform: [{rotate}],
+        transform: [{ rotate }],
       }}>
       <Line
         fill="none"

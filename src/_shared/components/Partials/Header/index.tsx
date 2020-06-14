@@ -7,22 +7,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { connect } from 'react-redux';
-
 import {
   getHeaderSearchValue,
   headerSearchClose,
 } from '../../../../redux/actions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Color from '../../../utils/Color';
+import { MenuItems } from '../../../utils/Types';
 import styles from './styles';
 import Animated, { Easing } from 'react-native-reanimated';
 import { runTiming } from '../../../utils/AnimationHelpers';
 import Menu from '../Menu';
+import { useNavigation } from '@react-navigation/native';
 
-interface TZProps {
-  navigate: Function;
-  goBack: Function;
-}
 const { width } = Dimensions.get('window');
 
 type HeaderProps = {
@@ -32,12 +29,11 @@ type HeaderProps = {
   useDrawerMenu?: boolean;
   useSearch?: boolean;
   useBorder?: boolean;
-  navigation?: TZProps;
-  route?: object;
   useElevation?: boolean;
   getHeaderSearchValue?: Function;
   headerKey?: string;
   searchOn?: boolean;
+  headerMenu: string[];
   header?: {
     search: {
       value: string;
@@ -52,21 +48,32 @@ const Header = (props: HeaderProps) => {
   const useModalMenu = props?.useModalMenu || false;
   const useSearch = props?.useSearch || false;
   const useBorder = props?.useBorder || false;
-  const navigation = props?.navigation;
   const useElevation = props?.useElevation || false;
-
-  const menuItems = [
+  const headerMenu = props?.headerMenu;
+  const { navigate, goBack } = useNavigation();
+  const defaultMenu = [
     {
       title: 'Settings',
-      icon: 'settings',
-      action: () => console.log('Settings'),
+      action: () => navigate('Settings'),
     },
     {
-      title: 'Feedback/Help',
-      icon: 'feedback',
-      action: () => console.log('Feedback/Help'),
+      title: 'Send feedback',
+      action: () => console.log('Feedback'),
+    },
+    {
+      title: 'Help',
+      action: () => console.log('Help'),
     },
   ];
+
+  const menuItems: MenuItems[] =
+    headerMenu === undefined || headerMenu[0] === 'default'
+      ? defaultMenu
+      : headerMenu
+          .map((value: string) => {
+            return defaultMenu.find((dm) => dm.title === value);
+          })
+          .filter((value: any) => value !== undefined);
   const setSearchValue =
     props?.getHeaderSearchValue ||
     function () {
@@ -105,12 +112,10 @@ const Header = (props: HeaderProps) => {
               activeOpacity={0.8}
               style={styles.backBtn}
               onPress={() => {
-                if (typeof navigation?.goBack === 'function') {
-                  navigation?.goBack();
-                }
                 if (useSearch) {
                   headerSearchClose(true);
                 }
+                goBack();
               }}>
               <Icon name={'arrow-back'} size={26} color={Color.HEADERICON} />
             </TouchableOpacity>
@@ -132,6 +137,7 @@ const Header = (props: HeaderProps) => {
             TriggerComponent={() => (
               <Icon name={'more-vert'} size={30} color={Color.HEADERICON} />
             )}
+            textStyle={styles.menuItemText}
             menuItems={menuItems}
           />
         )}
